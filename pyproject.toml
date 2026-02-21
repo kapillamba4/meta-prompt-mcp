@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "meta-prompt-mcp"
-version = "0.1.0"
+version = "1.0.2"
 description = "An MCP server that acts as a Prompting Oracle — RAG-powered advice from Google's official Prompting Guide 101."
 readme = "README.md"
 license = { text = "MIT" }

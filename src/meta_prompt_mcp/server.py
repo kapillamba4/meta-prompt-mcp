@@ -47,21 +47,13 @@ _index_manager = IndexManager()
 
 @mcp.tool()
 def get_google_strategy(query: str) -> str:
-    """Search Google's Prompting Guide 101 for a specific prompting technique or strategy.
-
-    Use this tool when you need authoritative advice on prompt engineering from
-    Google's official documentation. Examples of good queries:
-    - "How to use few-shot prompting effectively"
-    - "Best practices for using delimiters in prompts"
-    - "Chain-of-thought prompting patterns"
-    - "How to structure system instructions"
-    - "Techniques for grounding LLM responses"
+    """Look up a prompting technique or best practice from Google's Prompting Guide 101.
 
     Args:
-        query: A natural-language question about prompting strategies or techniques.
+        query: Natural-language question about a prompting strategy or technique.
 
     Returns:
-        A synthesized answer grounded in the Google Prompting Guide 101 PDF.
+        Synthesized answer grounded in the guide.
     """
     logger.info("Tool call: get_google_strategy(%r)", query)
     try:
