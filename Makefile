@@ -1,4 +1,4 @@
-.PHONY: install dev lint format test build publish clean run
+.PHONY: install dev lint format test build publish clean run build-index
 
 # --------------------------------------------------------------------------
 # Development
@@ -26,6 +26,9 @@ test:  ## Run tests
 
 run:  ## Start the MCP server
 	meta-prompt-mcp
+
+build-index:  ## Pre-build the vector index from PDFs in data/
+	meta-prompt-mcp-build-index
 
 # --------------------------------------------------------------------------
 # Build & Publish

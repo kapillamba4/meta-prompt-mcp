@@ -38,6 +38,7 @@ dev = [
 
 [project.scripts]
 meta-prompt-mcp = "meta_prompt_mcp.server:main"
+meta-prompt-mcp-build-index = "meta_prompt_mcp.index_manager:build_index_cli"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/meta_prompt_mcp"]

@@ -22,7 +22,6 @@ env/
 .env
 
 # Project-specific
-storage/
 data/*.pdf
 
 # OS

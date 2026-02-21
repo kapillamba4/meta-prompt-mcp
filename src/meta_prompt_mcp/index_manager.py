@@ -138,3 +138,20 @@ class IndexManager:
         storage_context = StorageContext.from_defaults(persist_dir=self.storage_dir)
         self._index = load_index_from_storage(storage_context)
         logger.info("Index loaded successfully (%s).", self.storage_dir)
+
+
+def build_index_cli() -> None:
+    """Standalone CLI entry point to pre-build the vector index."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s  %(name)-20s  %(levelname)-8s  %(message)s",
+    )
+    manager = IndexManager()
+
+    if manager._storage_exists():
+        logger.info("Index already exists at %s. Use `make clean-index` to rebuild.", manager.storage_dir)
+        return
+
+    logger.info("Building index…")
+    manager.ensure_index()
+    logger.info("Done! Index saved to %s", manager.storage_dir)
