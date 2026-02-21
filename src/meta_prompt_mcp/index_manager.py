@@ -21,8 +21,9 @@ logger = logging.getLogger("meta-prompt-mcp")
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
-_DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
-_DEFAULT_STORAGE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "storage")
+_PKG_DIR = Path(__file__).resolve().parent  # .../meta_prompt_mcp/
+_DEFAULT_DATA_DIR = str(_PKG_DIR / "data")
+_DEFAULT_STORAGE_DIR = str(_PKG_DIR / "storage")
 _EMBED_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 
 

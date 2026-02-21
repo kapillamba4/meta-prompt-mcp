@@ -45,7 +45,7 @@ Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that ac
 | **`get_google_strategy` tool** | RAG-powered lookup into the 68-page PDF |
 | **`improve_my_prompt` prompt** | Template that analyzes and rewrites your prompts using guide techniques |
 | **Zero-cost embeddings** | Uses `BAAI/bge-small-en-v1.5` locally — no API keys after initial parse |
-| **Persistent index** | Vector store cached in `./storage` for near-instant startup |
+| **Persistent index** | Vector store cached inside the package for near-instant startup |
 | **Offline capable** | Runs entirely locally after the one-time index build |
 
 ---
@@ -62,27 +62,9 @@ uvx meta-prompt-mcp
 pip install meta-prompt-mcp
 ```
 
-### 2. Set Up the Data
+The package ships with a **pre-built vector index** — no API keys or setup needed.
 
-```bash
-# Place Google's Prompting Guide 101 PDF in the data/ directory
-cp ~/Downloads/prompting-guide-101.pdf data/
-```
-
-### 3. First Run (requires LLAMA_CLOUD_API_KEY)
-
-```bash
-# Get a free key at https://cloud.llamaindex.ai/
-cp .env.example .env
-# Edit .env and add your LLAMA_CLOUD_API_KEY
-
-# The first run parses the PDF and builds the index
-meta-prompt-mcp
-```
-
-After the first run, `./storage` is created and no API keys are needed.
-
-### 4. Configure Your MCP Host
+### 2. Configure Your MCP Host
 
 #### Claude Desktop
 
@@ -124,13 +106,28 @@ git clone <your-repo-url>
 cd meta-prompt-mcp
 
 # Install in dev mode
-pip install -e ".[dev]"
+make dev
+
+# Build (or rebuild) the vector index
+make build-index
 
 # Run the server
-meta-prompt-mcp
-# or
-python -m meta_prompt_mcp
+make run
 ```
+
+### Make Targets
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Install in editable mode with dev dependencies |
+| `make build-index` | Pre-build the vector index from PDFs |
+| `make clean-index` | Remove cached index (forces rebuild on next run) |
+| `make run` | Start the MCP server |
+| `make lint` | Run linter |
+| `make format` | Auto-format code |
+| `make test` | Run tests |
+| `make build` | Build distribution packages |
+| `make publish` | Publish to PyPI |
 
 ---
 
@@ -147,17 +144,17 @@ python -m meta_prompt_mcp
 ```
 meta-prompt-mcp/
 ├── pyproject.toml              # Package config & dependencies
+├── Makefile                    # Dev commands (make help)
 ├── README.md
 ├── .env.example                # Env template
-├── data/                       # Place PDF here
-│   └── README.md
-├── storage/                    # Auto-generated vector index (gitignored)
 └── src/
     └── meta_prompt_mcp/
         ├── __init__.py
         ├── __main__.py         # python -m support
         ├── index_manager.py    # LlamaParse + embedding + persistence
-        └── server.py           # FastMCP server with tools & prompts
+        ├── server.py           # FastMCP server with tools & prompts
+        ├── data/               # Place PDF here
+        └── storage/            # Auto-generated vector index (gitignored)
 ```
 
 ---

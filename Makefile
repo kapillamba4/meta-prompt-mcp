@@ -56,7 +56,7 @@ clean:  ## Remove build artifacts
 	find . -type f -name '*.pyc' -delete 2>/dev/null || true
 
 clean-index:  ## Remove the cached vector index (forces rebuild on next run)
-	rm -rf storage/
+	rm -rf src/meta_prompt_mcp/storage/
 
 # --------------------------------------------------------------------------
 # Help

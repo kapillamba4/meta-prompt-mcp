@@ -43,6 +43,10 @@ meta-prompt-mcp-build-index = "meta_prompt_mcp.index_manager:build_index_cli"
 [tool.hatch.build.targets.wheel]
 packages = ["src/meta_prompt_mcp"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/meta_prompt_mcp/data" = "meta_prompt_mcp/data"
+"src/meta_prompt_mcp/storage" = "meta_prompt_mcp/storage"
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
