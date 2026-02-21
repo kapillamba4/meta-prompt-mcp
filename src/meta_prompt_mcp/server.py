@@ -32,9 +32,9 @@ mcp = FastMCP(
     "meta-prompt-mcp",
     instructions=(
         "You are connected to the Meta-Prompt MCP server — a Prompting Oracle "
-        "backed by Google's official 68-page Prompting Guide 101. "
-        "Use the `get_google_strategy` tool to look up specific prompting techniques, "
-        "patterns, and best practices from the guide."
+        "backed by official prompting guides. "
+        "Use the `get_prompting_strategy` tool to look up specific prompting techniques, "
+        "patterns, and best practices."
     ),
 )
 
@@ -46,23 +46,23 @@ _index_manager = IndexManager()
 
 
 @mcp.tool()
-def get_google_strategy(query: str) -> str:
-    """Look up a prompting technique or best practice from Google's Prompting Guide 101.
+def get_prompting_strategy(query: str) -> str:
+    """Look up a prompting technique or best practice from official prompting guides.
 
     Args:
         query: Natural-language question about a prompting strategy or technique.
 
     Returns:
-        Synthesized answer grounded in the guide.
+        Synthesized answer grounded in the guides.
     """
-    logger.info("Tool call: get_google_strategy(%r)", query)
+    logger.info("Tool call: get_prompting_strategy(%r)", query)
     try:
         result = _index_manager.query(query)
         return result
     except FileNotFoundError as exc:
         return (
             f"⚠️  Setup required: {exc}\n\n"
-            "Please place the Google Prompting Guide 101 PDF in the data/ directory "
+            "Please place prompting guide documents (PDFs or Markdown) in the data/ directory "
             "and restart the server."
         )
     except RuntimeError as exc:
@@ -76,17 +76,17 @@ def get_google_strategy(query: str) -> str:
 
 @mcp.prompt()
 def improve_my_prompt(draft_prompt: str) -> str:
-    """Analyze a draft prompt and return an improved version using Google's prompting best practices.
+    """Analyze a draft prompt and return an improved version using prompting best practices.
 
     This prompt template instructs the host LLM to:
-    1. Look up relevant techniques from the Prompting Guide
+    1. Look up relevant techniques from the accessible Prompting Guides
     2. Identify weaknesses in the draft
     3. Apply specific improvements with explanations
 
     Args:
         draft_prompt: The user's draft prompt that needs improvement.
     """
-    return f"""You are a Prompt Engineering Expert with access to Google's official Prompting Guide 101.
+    return f"""You are a Prompt Engineering Expert with access to official Prompting Guides.
 
 Your task is to analyze and improve the following draft prompt.
 
@@ -94,11 +94,11 @@ Your task is to analyze and improve the following draft prompt.
 {draft_prompt}
 
 ## Instructions
-1. First, use the `get_google_strategy` tool to look up relevant prompting techniques
+1. First, use the `get_prompting_strategy` tool to look up relevant prompting techniques
    (e.g., few-shot patterns, chain-of-thought, delimiters, role assignment).
 2. Identify specific weaknesses in the draft prompt.
 3. Rewrite the prompt applying the techniques you found.
-4. Explain what you changed and why, citing the specific technique from Google's guide.
+4. Explain what you changed and why, citing the specific technique from the guides that motivated each.
 
 Return your response in this format:
 
@@ -109,7 +109,7 @@ Return your response in this format:
 [The rewritten prompt]
 
 ### Changes Applied
-[Bullet list of changes with the Google technique that motivated each]
+[Bullet list of changes with the technique that motivated each]
 """
 
 

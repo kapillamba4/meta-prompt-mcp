@@ -63,12 +63,16 @@ class IndexManager:
 
         retriever = self._index.as_retriever(similarity_top_k=similarity_top_k)
         nodes = retriever.retrieve(question)
-        
+
         if not nodes:
             return "No relevant strategies found."
-            
-        result_text = "\n\n---\n\n".join(f"**Excerpt (Score: {node.score:.2f}):**\n\n{node.node.get_content()}" for node in nodes)
-        return f"Found the following relevant strategies from Google's Prompting Guide 101:\n\n{result_text}"
+
+        result_text = "\n\n---\n\n".join(
+            f"**Excerpt (Score: {node.score:.2f}):**\n\n{node.node.get_content()}" for node in nodes
+        )
+        return (
+            f"Found the following relevant strategies from the Prompting Guides:\n\n{result_text}"
+        )
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -88,7 +92,7 @@ class IndexManager:
 
     def _build_index(self) -> None:
         """Parse PDFs via LlamaParse, embed, and persist the vector store."""
-        from llama_index.core import Settings, StorageContext, VectorStoreIndex
+        from llama_index.core import Settings, VectorStoreIndex
         from llama_parse import LlamaParse
 
         # --- Validate prerequisites ---
@@ -101,27 +105,29 @@ class IndexManager:
             )
 
         pdf_files = glob.glob(os.path.join(self.data_dir, "*.pdf"))
-        if not pdf_files:
+        md_files = glob.glob(os.path.join(self.data_dir, "*.md"))
+        all_files = pdf_files + md_files
+        if not all_files:
             raise FileNotFoundError(
-                f"No PDF files found in {self.data_dir}. "
-                "Please place the Google Prompting Guide 101 PDF in the data/ directory."
+                f"No PDF or Markdown files found in {self.data_dir}. "
+                "Please place your prompting guides in the data/ directory."
             )
 
         # --- Configure embedding model globally ---
         embed_model = self._get_embed_model()
         Settings.embed_model = embed_model
 
-        # --- Parse PDFs ---
-        logger.info("Parsing %d PDF(s) with LlamaParse…", len(pdf_files))
+        # --- Parse files ---
+        logger.info("Parsing %d file(s) with LlamaParse…", len(all_files))
         parser = LlamaParse(
             api_key=api_key,
             result_type="markdown",
         )
 
         documents = []
-        for pdf_path in pdf_files:
-            logger.info("  → %s", os.path.basename(pdf_path))
-            docs = parser.load_data(pdf_path)
+        for file_path in all_files:
+            logger.info("  → %s", os.path.basename(file_path))
+            docs = parser.load_data(file_path)
             documents.extend(docs)
 
         logger.info("Parsed %d document chunks.", len(documents))
@@ -155,7 +161,9 @@ def build_index_cli() -> None:
     manager = IndexManager()
 
     if manager._storage_exists():
-        logger.info("Index already exists at %s. Use `make clean-index` to rebuild.", manager.storage_dir)
+        logger.info(
+            "Index already exists at %s. Use `make clean-index` to rebuild.", manager.storage_dir
+        )
         return
 
     logger.info("Building index…")

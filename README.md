@@ -1,6 +1,6 @@
 # Meta-Prompt MCP
 
-> **A Prompting Oracle** — An MCP server that bridges Google's official 68-page Prompting Guide 101 with your LLM workflow using RAG.
+> **A Prompting Oracle** — An MCP server that bridges official Prompting Guides with your LLM workflow using RAG.
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -9,7 +9,7 @@
 
 ## What It Does
 
-Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that acts as an automated "Prompting Oracle." It lets any MCP-compatible host (Claude Desktop, Cursor, etc.) **query Google's Prompting Guide 101** mid-conversation for specific techniques and best practices.
+Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that acts as an automated "Prompting Oracle." It lets any MCP-compatible host (Claude Desktop, Cursor, etc.) **query your prompting Guides** mid-conversation for specific techniques and best practices.
 
 ### Architecture
 
@@ -19,7 +19,7 @@ Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that ac
 │   (Claude Desktop,  │                │                          │
 │    Cursor, IDEs)    │                │   ┌──────────────────┐   │
 │                     │                │   │  FastMCP Server   │   │
-│                     │                │   │  • get_google_    │   │
+│                     │                │   │  • get_prompting_ │   │
 │                     │                │   │    strategy       │   │
 │                     │                │   │  • improve_my_    │   │
 │                     │                │   │    prompt         │   │
@@ -42,7 +42,7 @@ Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that ac
 
 | Feature | Details |
 |---------|---------|
-| **`get_google_strategy` tool** | RAG-powered lookup into the 68-page PDF |
+| **`get_prompting_strategy` tool** | RAG-powered lookup into the prompting guides |
 | **`improve_my_prompt` prompt** | Template that analyzes and rewrites your prompts using guide techniques |
 | **Zero-cost embeddings** | Uses `BAAI/bge-small-en-v1.5` locally — no API keys after initial parse |
 | **Persistent index** | Vector store cached inside the package for near-instant startup |
@@ -120,7 +120,7 @@ make run
 | Command | Description |
 |---------|-------------|
 | `make dev` | Install in editable mode with dev dependencies |
-| `make build-index` | Pre-build the vector index from PDFs |
+| `make build-index` | Pre-build the vector index from documents |
 | `make clean-index` | Remove cached index (forces rebuild on next run) |
 | `make run` | Start the MCP server |
 | `make lint` | Run linter |
@@ -153,7 +153,7 @@ meta-prompt-mcp/
         ├── __main__.py         # python -m support
         ├── index_manager.py    # LlamaParse + embedding + persistence
         ├── server.py           # FastMCP server with tools & prompts
-        ├── data/               # Place PDF here
+        ├── data/               # Place PDFs/MDs here
         └── storage/            # Auto-generated vector index (gitignored)
 ```
 
