@@ -87,6 +87,14 @@ Add to your MCP settings:
 }
 ```
 
+#### Claude Code
+
+Run the following command in your terminal:
+
+```bash
+claude mcp add meta-prompt-mcp -- uvx meta-prompt-mcp
+```
+
 ---
 
 ## Development
