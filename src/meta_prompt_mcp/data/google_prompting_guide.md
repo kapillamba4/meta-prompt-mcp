@@ -1,2093 +1,1439 @@
-# Prompting guide 101
+# Prompt Engineering
 
-## A quick-start handbook for effective prompts
+Author: Lee Boonstra
 
-# Writing effective prompts
+A large, multi-faceted geometric shape, similar to a crystal, with various planes reflecting gradients of deep purple and bright blue.
 
-From the very beginning, Google Workspace was built to allow you to collaborate in real time with other people. Now, you can also collaborate with AI using Gemini for Google Workspace to help boost your productivity and creativity without sacrificing privacy or security. The embedded generative AI-powered features can help you write, organize information, create images, accelerate workflows, have richer meetings, and much more, all while using your favorite apps like Gmail, Google Docs, Google Drive, Google Sheets, Google Meet, Google Slides, and Gemini Advanced (the standalone chat experience available at gemini.google.com with enterprise-grade security). Gemini is accessible right where you are doing your work — with access to your personal knowledge base in Drive, Docs, Gmail, and more — so you can enhance and create powerful workflows across the Workspace apps with less tab switching and interruption.
+# Acknowledgements
 
-This guide provides you with the foundational skills to write effective prompts when using Gemini for Workspace. You can think of a prompt as a conversation starter with your AI-powered assistant. You might write several prompts as the conversation progresses. While the possibilities are virtually endless, you can put consistent best practices to work today.
+## Content contributors
 
-The four main areas to consider when writing an effective prompt are:
-* Persona
-* Task
-* Context
-* Format
+Michael Sherman
+Yuan Cao
+Erick Armbrust
+Anant Nawalgaria
+Antonio Gulli
+Simone Cammel
 
-Here is an example of a prompt using all four areas that could work well in Gmail and Google Docs:
+## Curators and Editors
 
-> You are a program manager in [industry]. Draft an executive summary email to [persona] based on [details about relevant program docs]. Limit to bullet points.
+Antonio Gulli
+Anant Nawalgaria
+Grace Mollison
 
-You don’t need to use all four in every prompt, but using a few will help! Always remember to include a verb or command as part of your task; this is the most important component of a prompt.
+## Technical Writer
 
-Contact sales to get started with Gemini for Workspace today.
-[A QR code with a dinosaur icon in the center]
+Joey Haymaker
 
-# Here are quick tips to get you started with Gemini for Google Workspace:
+## Designer
 
-1. **Use natural language.** Write as if you’re speaking to another person. Express complete thoughts in full sentences.
-2. **Be specific and iterate.** Tell Gemini what you need it to do (summarize, write, change the tone, create). Provide as much context as possible.
-3. **Be concise and avoid complexity.** State your request in brief — but specific — language. Avoid jargon.
-4. **Make it a conversation.** Fine-tune your prompts if the results don’t meet your expectations or if you believe there’s room for improvement. Use follow-up prompts and an iterative process of review and refinement to yield better results.
-5. **Use your documents.** Personalize Gemini’s output with information from your own files in Google Drive.
-6. **Make Gemini your prompt editor.** When using Gemini Advanced, start your prompts with: “Make this a power prompt: [original prompt text here].” Gemini will make suggestions on how to improve your prompt. Ensure it says what you need, and then paste it back into Gemini Advanced to get an output.
+Michael Lanning
 
-> Prompting is a skill we can all learn. You don’t have to be a prompt engineer to use generative AI. However, you will likely need to try a few different approaches for your prompt if you don’t get your desired outcome the first time. Based on what we’ve learned from our users so far, the most fruitful prompts average around 21 words with relevant context, yet the prompts people try are usually less than nine words.
->
-> Generative AI and all of its possibilities are exciting, but it’s still new. Even though our models are getting better every day, prompts can sometimes have unpredictable responses.
->
-> Before putting an output from Gemini for Workspace into action, review it to ensure clarity, relevance, and accuracy. And of course, keep the most important thing in mind: Generative AI is meant to help humans but the final output is yours.
->
-> The example prompts in this guide are meant for illustrative purposes.
+The right side of the page features a large, abstract, three-dimensional geometric shape. It is composed of numerous sharp, angular facets in shades of metallic silver and deep, reflective blue, giving it the appearance of a large, polished gemstone or a complex crystalline structure.
 
 # Table of contents
 
-Writing effective prompts ................................................................................. Page 2
+Introduction 6
+Prompt engineering 7
+LLM output configuration 8
+* Output length 8
+* Sampling controls 9
+    - Temperature 9
+    - Top-K and top-P 10
+    - Putting it all together 11
+Prompting techniques 13
+* General prompting / zero shot 13
+* One-shot & few-shot 15
+* System, contextual and role prompting 18
+    - System prompting 19
+    - Role prompting 21
+    - Contextual prompting 23
 
-Introduction ................................................................................................. Page 5
+Step-back prompting 25
 
-Administrative support ................................................................................. Page 7
+Chain of Thought (CoT) 29
 
-Communications .......................................................................................... Page 11
+Self-consistency 32
 
-Customer service ........................................................................................ Page 15
+Tree of Thoughts (ToT) 36
 
-Executives ................................................................................................. Page 20
+ReAct (reason & act) 37
 
-Frontline management ................................................................................ Page 28
+Automatic Prompt Engineering 40
 
-Human resources ........................................................................................ Page 32
+Code prompting 42
 
-Marketing ................................................................................................... Page 37
+* Prompts for writing code 42
+* Prompts for explaining code 44
+* Prompts for translating code 46
+* Prompts for debugging and reviewing code 48
+* What about multimodal prompting? 54
 
-Project management ................................................................................... Page 46
+**Best Practices** 54
 
-Sales .......................................................................................................... Page 50
+* Provide examples 54
+* Design with simplicity 55
+* Be specific about the output 56
+* Use Instructions over Constraints 56
+* Control the max token length 58
+* Use variables in prompts 58
+* Experiment with input formats and writing styles 59
+* For few-shot prompting with classification tasks, mix up the classes 59
+* Adapt to model updates 60
+* Experiment with output formats 60
 
-Small business owners and entrepreneurs .................................................... Page 58
+JSON Repair 61
 
-Startup leaders ........................................................................................... Page 62
+Working with Schemas 62
 
-Leveling up your prompt writing ................................................................... Page 67
+Experiment together with other prompt engineers 63
+
+CoT Best practices 64
+
+Document the various prompt attempts 64
+
+**Summary** 66
+
+**Endnotes** 68
+
+> You don't need to be a data scientist or a machine learning engineer – everyone can write a prompt.
 
 # Introduction
 
-## Gemini for Google Workspace: Prompting 101
+When thinking about a large language model input and output, a text prompt (sometimes accompanied by other modalities such as image prompts) is the input the model uses to predict a specific output. You don't need to be a data scientist or a machine learning engineer – everyone can write a prompt. However, crafting the most effective prompt can be complicated. Many aspects of your prompt affect its efficacy: the model you use, the model's training data, the model configurations, your word-choice, style and tone, structure, and context all matter. Therefore, prompt engineering is an iterative process. Inadequate prompts can lead to ambiguous, inaccurate responses, and can hinder the model's ability to provide meaningful output.
 
-Gemini for Workspace is your AI-powered assistant integrated into the apps you use every day — Gmail, Google Docs, Google Sheets, Google Meet, Google Slides, and Gemini Advanced (the standalone chat experience available at gemini.google.com with enterprise-grade security). This means the apps you know and use will work together smoothly so you can collaborate with Gemini right where you are. You can have fewer interruptions to your focus and workflow, helping you complete tasks and do things you might not have initially known how to do.
+When you chat with the Gemini chatbot,<sup>1</sup> you basically write prompts, however this whitepaper focuses on writing prompts for the Gemini model within Vertex AI or by using the API, because by prompting the model directly you will have access to the configuration such as temperature etc.
 
-You can access the features of Gemini for Workspace in multiple ways. Engaging with Gemini in the side panel of your Workspace apps allows you to create highly personalized generative AI outputs that are based on your own files and documents — even if they aren’t Google Docs. You can generate personalized emails in seconds referencing your own Docs to pull in relevant context, generate Slides that are based on information directly from your own briefs or reports, and so much more.
+This whitepaper discusses prompt engineering in detail. We will look into the various prompting techniques to help you getting started and share tips and best practices to become a prompting expert. We will also discuss some of the challenges you can face while crafting prompts.
 
-Understanding what makes an effective prompt and learning to craft prompts on the fly can boost your productivity and creativity. Gemini for Workspace can help you:
+# Prompt engineering
 
-* Improve your writing
-* Organize data
-* Create original images
-* Summarize information and surface insights
-* Have better meetings with automatic note taking
-* Research unfamiliar topics easily
-* Spot trends, synthesize information, and identify business opportunities
+Remember how an LLM works; it’s a prediction engine. The model takes sequential text as an input and then predicts what the following token should be, based on the data it was trained on. The LLM is operationalized to do this over and over again, adding the previously predicted token to the end of the sequential text for predicting the following token. The next token prediction is based on the relationship between what’s in the previous tokens and what the LLM has seen during its training.
 
-For 25 years, Google has built helpful, secure products that give users choice and control over their data. It’s a bedrock principle for us. This was the case back when we first launched Gmail in 2004, and it remains true in the era of generative AI. This means your data is your data and does not belong to Google. Your data stays in your Workspace environment. Your privacy is protected. Your content is never used for targeting ads or to train or improve Gemini or any other generative AI models.
+When you write a prompt, you are attempting to set up the LLM to predict the right sequence of tokens. Prompt engineering is the process of designing high-quality prompts that guide LLMs to produce accurate outputs. This process involves tinkering to find the best prompt, optimizing prompt length, and evaluating a prompt’s writing style and structure in relation to the task. In the context of natural language processing and LLMs, a prompt is an input provided to the model to generate a response or prediction.
 
-# How to use this prompt guide
+These prompts can be used to achieve various kinds of understanding and generation tasks such as text summarization, information extraction, question and answering, text classification, language or code translation, code generation, and code documentation or reasoning.
 
-This guide introduces you to prompting with Gemini for Workspace. It includes strong prompt design examples to help you get started. Additionally, it covers scenarios for different personas, use cases, and potential prompts.
+Please feel free to refer to Google’s prompting guides<sup>2,3</sup> with simple and effective prompting examples.
 
-You will notice a variety of prompt styles. Some prompts have brackets, which indicate where you would fill in specific details or tag your own personal files by typing @file name. Other prompts are presented without variables highlighted to show you what a full prompt could look like. All of the prompts in this guide are meant to inspire you, but ultimately they will need to be customized to help you with your specific work.
+When prompt engineering, you will start by choosing a model. Prompts might need to be optimized for your specific model, regardless of whether you use Gemini language models in Vertex AI, GPT, Claude, or an open source model like Gemma or LLaMA.
 
-To get started, use the role-specific suggested prompts as inspiration to help you unlock a new and powerful way of working.
+Besides the prompt, you will also need to tinker with the various configurations of a LLM.
 
-An image shows four colleagues in a modern office setting, gathered around a desk and looking at computer monitors while collaborating.
+# LLM output configuration
 
-Next, learn how you can get started with different features by visiting **g.co/gemini/features**.
+Once you choose your model you will need to figure out the model configuration. Most LLMs come with various configuration options that control the LLM’s output. Effective prompt engineering requires setting these configurations optimally for your task.
 
-# Administrative support
+## Output length
 
-As an administrative support professional, you are responsible for keeping teams on track. You’re required to stay organized and efficient — even under pressure — while juggling many priority tasks.
+An important configuration setting is the number of tokens to generate in a response. Generating more tokens requires more computation from the LLM, leading to higher energy consumption, potentially slower response times, and higher costs.
 
-This section provides you with simple ways to integrate prompts in your daily tasks.
+Reducing the output length of the LLM doesn’t cause the LLM to become more stylistically or textually succinct in the output it creates, it just causes the LLM to stop predicting more tokens once the limit is reached. If your needs require a short output length, you’ll also possibly need to engineer your prompt to accommodate.
 
-A photo of a smiling man wearing glasses and headphones, gesturing with his hands as if in a video call.
+Output length restriction is especially important for some LLM prompting techniques, like ReAct, where the LLM will keep emitting useless tokens after the response you want.
 
-## Getting started
+Be aware, generating more tokens requires more computation from the LLM, leading to higher energy consumption and potentially slower response times, which leads to higher costs.
 
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
+## Sampling controls
 
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
+LLMs do not formally predict a single token. Rather, LLMs predict probabilities for what the next token could be, with each token in the LLM’s vocabulary getting a probability. Those token probabilities are then sampled to determine what the next produced token will be. Temperature, top-K, and top-P are the most common configuration settings that determine how predicted token probabilities are processed to choose a single output token.
 
-## Prompt iteration example
-**NEW** Use case: Plan agendas (offsite, meetings, and more)
+### Temperature
 
-You’re planning a three-day offsite meeting. To build an agenda, you brainstorm with Gemini Advanced. You type:
+Temperature controls the degree of randomness in token selection. Lower temperatures are good for prompts that expect a more deterministic response, while higher temperatures can lead to more diverse or unexpected results. A temperature of 0 (greedy decoding) is
 
-> I am an executive administrator to a team director. Our newly formed team now consists of content marketers, digital marketers, and product marketers. We are gathering for the first time at a three-day offsite in Washington, DC. Plan activities for each day that include team bonding activities and time for deeper strategic work. Create a sample agenda for me. (Gemini Advanced) ✦
+deterministic: the highest probability token is always selected (though note that if two tokens have the same highest predicted probability, depending on how tiebreaking is implemented you may not always get the same output with temperature 0).
 
-* Persona
-* Task
-* Context
-* Format
+Temperatures close to the max tend to create more random output. And as temperature gets higher and higher, all tokens become equally likely to be the next predicted token.
 
-> **Gemini Advanced**
->
-> **User:** I am an executive administrator to a team director. Our newly formed team now consists of content marketers, digital marketers, and product marketers. We are gathering for the first time at a three-day offsite in Washington, DC. Plan activities for each day that include team bonding activities and time for deeper strategic wor...
->
-> **Gemini:**
->
-> **Offsite Agenda: Newly Formed Marketing Team**
->
-> **Location:** Washington, DC
->
-> **Goal:** Foster team bonding, align on strategic goals, and lay the groundwork for successful collaboration.
->
-> **Day 1: Building Connections and Setting the Stage**
->
-> * **Morning:**
->     * 9:00 - 9:30: Welcome and Introductions:
->         * Team Director welcomes the team and sets the tone for the offsite.
->         * Icebreaker activity to facilitate introductions and get people comfortable.
+The Gemini temperature control can be understood in a similar way to the softmax function used in machine learning. A low temperature setting mirrors a low softmax temperature (T), emphasizing a single, preferred temperature with high certainty. A higher Gemini temperature setting is like a high softmax temperature, making a wider range of temperatures around the selected setting more acceptable. This increased uncertainty accommodates scenarios where a rigid, precise temperature may not be essential like for example when experimenting with creative outputs.
 
-This is a helpful start to your planning. You need to generate specific ideas for the team bonding activities.
-You type:
+## Top-K and top-P
 
-Suggest three different icebreaker activities that encourage people to learn about their teammates' preferred working styles, strengths, and goals. Make sure the icebreaker ideas are engaging and can be completed by a group of 25 people in 30 minutes or less. (Gemini Advanced) ✦
+Top-K and top-P (also known as nucleus sampling)<sup>4</sup> are two sampling settings used in LLMs to restrict the predicted next token to come from tokens with the top predicted probabilities. Like temperature, these sampling settings control the randomness and diversity of generated text.
 
-> **Gemini Advanced**
->
-> **User:** Suggest three different icebreaker activities that encourage people to learn about their teammates' preferred working styles, strengths, and goals. Make sure the icebreaker ideas are engaging and can be completed by a group of 25 people in 30 minutes or less.
->
-> **Gemini:**
->
-> Here are three icebreaker activities that are interactive, engaging, and designed to help your newly formed marketing team learn about each other's preferred working styles, strengths, and goals:
->
-> 1. **"My Superhero Profile":**
-> * **Materials:** Large sheets of paper, markers, and tape.
-> * **Instructions:**
->     * Each person receives a sheet of paper and creates a "superhero profile" of themselves.
->     * The profile includes:
->         * Superhero Name (related to their role or personality)
+*   **Top-K** sampling selects the top K most likely tokens from the model’s predicted distribution. The higher top-K, the more creative and varied the model’s output; the lower top-K, the more restive and factual the model’s output. A top-K of 1 is equivalent to greedy decoding.
 
-You are happy with the agenda as a starting point. You now want to reformat Gemini's response into a table.
-You type:
+*   **Top-P** sampling selects the top tokens whose cumulative probability does not exceed a certain value (P). Values for P range from 0 (greedy decoding) to 1 (all tokens in the LLM’s vocabulary).
 
-Organize this agenda in a table format. Include one of your suggested icebreakers for each day. (Gemini Advanced) ✦
+The best way to choose between top-K and top-P is to experiment with both methods (or both together) and see which one produces the results you are looking for.
 
-> Organize this agenda in a table format. Include one of your suggested icebreakers for each day.
+## Putting it all together
 
-Show drafts
+Choosing between top-K, top-P, temperature, and the number of tokens to generate, depends on the specific application and desired outcome, and the settings all impact one another. It’s also important to make sure you understand how your chosen model combines the different sampling settings together.
 
-**Offsite Agenda: Newly Formed Marketing Team**
+If temperature, top-K, and top-P are all available (as in Vertex Studio), tokens that meet both the top-K and top-P criteria are candidates for the next predicted token, and then temperature is applied to sample from the tokens that passed the top-K and top-P criteria. If only top-K or top-P is available, the behavior is the same but only the one top-K or P setting is used.
 
-**Location: Washington, DC**
+If temperature is not available, whatever tokens meet the top-K and/or top-P criteria are then randomly selected from to produce a single next predicted token.
+
+At extreme settings of one sampling configuration value, that one sampling setting either cancels out other configuration settings or becomes irrelevant.
+
+* If you set temperature to 0, top-K and top-P become irrelevant—the most probable token becomes the next token predicted. If you set temperature extremely high (above 1—generally into the 10s), temperature becomes irrelevant and whatever tokens make it through the top-K and/or top-P criteria are then randomly sampled to choose a next predicted token.
+* If you set top-K to 1, temperature and top-P become irrelevant. Only one token passes the top-K criteria, and that token is the next predicted token. If you set top-K extremely high, like to the size of the LLM’s vocabulary, any token with a nonzero probability of being the next token will meet the top-K criteria and none are selected out.
+* If you set top-P to 0 (or a very small value), most LLM sampling implementations will then only consider the most probable token to meet the top-P criteria, making temperature and top-K irrelevant. If you set top-P to 1, any token with a nonzero probability of being the next token will meet the top-P criteria, and none are selected out.
+
+As a general starting point, a temperature of .2, top-P of .95, and top-K of 30 will give you relatively coherent results that can be creative but not excessively so. If you want especially creative results, try starting with a temperature of .9, top-P of .99, and top-K of 40. And if you want less creative results, try starting with a temperature of .1, top-P of .9, and top-K of 20. Finally, if your task always has a single correct answer (e.g., answering a math problem), start with a temperature of 0.
+
+**NOTE:** With more freedom (higher temperature, top-K, top-P, and output tokens), the LLM might generate text that is less relevant.
+
+**WARNING:** Have you ever seen a response ending with a large amount of filler words? This is also known as the "repetition loop bug", which is a common issue in Large Language Models where the model gets stuck in a cycle, repeatedly generating the same (filler) word, phrase, or sentence structure, often exacerbated by inappropriate temperature and top-k/
+
+top-p settings. This can occur at both low and high temperature settings, though for different reasons. At low temperatures, the model becomes overly deterministic, sticking rigidly to the highest probability path, which can lead to a loop if that path revisits previously generated text. Conversely, at high temperatures, the model's output becomes excessively random, increasing the probability that a randomly chosen word or phrase will, by chance, lead back to a prior state, creating a loop due to the vast number of available options. In both cases, the model's sampling process gets "stuck," resulting in monotonous and unhelpful output until the output window is filled. Solving this often requires careful tinkering with temperature and top-k/top-p values to find the optimal balance between determinism and randomness.
+
+# Prompting techniques
+
+LLMs are tuned to follow instructions and are trained on large amounts of data so they can understand a prompt and generate an answer. But LLMs aren’t perfect; the clearer your prompt text, the better it is for the LLM to predict the next likely text. Additionally, specific techniques that take advantage of how LLMs are trained and how LLMs work will help you get the relevant results from LLMs
+
+Now that we understand what prompt engineering is and what it takes, let’s dive into some examples of the most important prompting techniques.
+
+## General prompting / zero shot
+
+A *zero-shot*<sup>5</sup> prompt is the simplest type of prompt. It only provides a description of a task and some text for the LLM to get started with. This input could be anything: a question, a start of a story, or instructions. The name zero-shot stands for ’no examples’.
+
+Let's use Vertex AI Studio (for Language) in Vertex AI,<sup>6</sup> which provides a playground to test prompts. In Table 1, you will see an example zero-shot prompt to classify movie reviews.
+
+The table format as used below is a great way of documenting prompts. Your prompts will likely go through many iterations before they end up in a codebase, so it's important to keep track of your prompt engineering work in a disciplined, structured way. More on this table format, the importance of tracking prompt engineering work, and the prompt development process is in the Best Practices section later in this chapter ("Document the various prompt attempts").
+
+The model temperature should be set to a low number, since no creativity is needed, and we use the gemini-pro default top-K and top-P values, which effectively disable both settings (see 'LLM Output Configuration' above). Pay attention to the generated output. The words *disturbing* and *masterpiece* should make the prediction a little more complicated, as both words are used in the same sentence.
 
 <table>
   <tbody>
     <tr>
-        <td>Day</td>
-        <td>Time</td>
-        <td>Activity</td>
-        <td>Notes</td>
-        <td>Icebreaker</td>
+        <td>Name</td>
+        <td colspan="3">1_1_movie_classification</td>
     </tr>
     <tr>
-        <td rowspan="3">Day 1: Building Connections &amp; Setting the Stage</td>
-        <td>9:00 - 9:30 AM</td>
-        <td>Welcome and Introductions</td>
-        <td>Team Director sets the tone</td>
-        <td></td>
+        <td>Goal</td>
+        <td colspan="3">Classify movie reviews as positive, neutral or negative.</td>
     </tr>
     <tr>
-        <td>9:30 - 10:30 AM</td>
-        <td>Team Building Activity</td>
-        <td>Interactive, collaborative</td>
-        <td>My Superhero Profile</td>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
     </tr>
     <tr>
-        <td>10:30 - 11:00 AM</td>
-        <td>Coffee Break</td>
-        <td colspan="2"></td>
+        <td>Temperature</td>
+        <td>0.1</td>
+        <td>Token Limit</td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>N/A</td>
+        <td>Top-P</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Classify movie reviews as POSITIVE, NEUTRAL or NEGATIVE.<br/>Review: Her is a disturbing study revealing the direction<br/>humanity is headed if AI is allowed to keep evolving,<br/>unchecked. I wish there were more movies like this masterpiece.<br/>Sentiment:</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td colspan="3">POSITIVE</td>
     </tr>
   </tbody>
 </table>
 
-You select **Export to Docs**. You open the newly created Doc. Now, you want to bring in detailed summaries for the strategy sessions using your existing files in Google Drive to provide more context for what will be discussed. You prompt Gemini in Docs and tag your relevant files by typing @file name.
+Table 1. An example of zero-shot prompting
 
-> Use @[2024 H2 Team Vision] to generate a summary for the opening remarks on Day 1 of this agenda.
-> (Gemini in Docs)
+When zero-shot doesn’t work, you can provide demonstrations or examples in the prompt, which leads to “one-shot” and “few-shot” prompting. General prompting / zero shot
 
-# Example use cases
+## One-shot & few-shot
 
-## Executive administrators and executive business partners
-**NEW** Use case: Manage multiple email inboxes
+When creating prompts for AI models, it is helpful to provide examples. These examples can help the model understand what you are asking for. Examples are especially useful when you want to steer the model to a certain output structure or pattern.
 
-After returning from vacation, you have many unread, unsorted emails. You prompt Gemini in the Gmail side panel. You type:
+A **one-shot prompt**, provides a *single* example, hence the name one-shot. The idea is the model has an example it can imitate to best complete the task.
 
-> Summarize emails from [manager] from the last week. (Gemini in Gmail)
+A **few-shot prompt**<sup>7</sup> provides *multiple* examples to the model. This approach shows the model a pattern that it needs to follow. The idea is similar to one-shot, but multiple examples of the desired pattern increases the chance the model follows the pattern.
 
-Gemini returns short summaries of each message. To directly access a message, you click on **Sources** and see tiles that bring you to specific emails. You select the most important one. Once the email thread opens, you see that many messages were exchanged. You prompt Gemini in Gmail:
+The number of examples you need for few-shot prompting depends on a few factors, including the complexity of the task, the quality of the examples, and the capabilities of the generative AI (gen AI) model you are using. As a general rule of thumb, you should use at least three to five examples for few-shot prompting. However, you may need to use more examples for more complex tasks, or you may need to use fewer due to the input length limitation of your model.
 
-> Summarize this email thread and list all action items and deadlines. (Gemini in Gmail)
-
-You owe a response to a question, which you believe is best answered by a document in your Drive. You prompt Gemini in the Gmail side panel. You type:
-
-> Generate a response to this email and use @[file name] to describe how the [initiative] can complement the workstream outlined in [colleague’s name]’s message. (Gemini in Gmail) [Gmail icon]
-
-Gemini in Gmail returns a suggested email that pulls directly from your own Doc. After reading it over, you select the **Copy** icon in the side panel and paste it directly into your message.
-
-## **NEW** Use case: Plan business travel
-
-Your manager has an upcoming meeting that is out of town. You are responsible for booking travel arrangements and creating a personalized itinerary. You need to research places to eat. You brainstorm with Gemini Advanced. You type:
-
-> I am an executive assistant. I need to create an itinerary for a two-day business trip in [location] during [dates]. My manager is staying at [hotel]. Suggest different options for breakfast and dinner within a 10-minute walk of the hotel, and find one entertainment option such as a movie theater, a local art show, or a popular tourist attraction. Put it in a table for me. (Gemini Advanced) [Gemini icon]
-
-You continue your conversation until you are happy with the itinerary. Before you make reservations, you want to share the draft with your manager. You select **Share & export** and select **Draft in Gmail**. Once the drafted email is created, you put the final touches on the message and send.
-
-## **NEW** Use case: Track travel and entertainment budget
-
-You want to create a spreadsheet to keep track of all of the travel expenses incurred. You open a new Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Create a budget tracker for business travel. It should include columns for: date, expense type (meal, entertainment, transportation), vendor name, and a description. (Gemini in Sheets) [Sheets icon]
-
-Gemini returns a tracker that is now ready for you to enter data.
-
-# Communications
-
-As a communications professional, you are responsible for ensuring your business is well understood by the public. You have to stay up to date with the trends, communicate clearly and effectively with many stakeholders, and build compelling narratives.
-
-This section provides you with simple ways to integrate prompts in your daily tasks.
-
-A group of four professionals—two women and two men—are collaborating in a modern office. They are looking at a laptop and a tablet, with a glass wall behind them covered in colorful sticky notes.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-
-**NEW** Use case: Create a press release
-
-You are in charge of public relations at a company in the personal care industry. The company you work for has just acquired a smaller brand, and you need to craft a press release. You’ve completed interviews with your company’s CEO, CFO, and the acquired company’s CEO. You’ve stored all of the most important quotes in one Doc. You also have a Doc with all of the information about the acquired brand, its vision, how it got started, and stats. You open a new Doc and prompt Gemini in the Docs side panel and type @file name to reference your relevant files. You type:
-
-> I’m a PR manager. I need to create a press release with a catchy title. Include quotes from @[VIP Quotes Acquisition]. (Gemini in Docs)
-
-* Persona
-* Task
-* Context
-* Format
+Table 2 shows a few-shot prompt example, let’s use the same gemini-pro model configuration settings as before, other than increasing the token limit to accommodate the need for a longer response.
 
 <table>
-  <thead>
-    <tr>
-        <th>✦ Gemini</th>
-        <th>⋮</th>
-        <th>⤢</th>
-        <th>✕</th>
-    </tr>
-  </thead>
   <tbody>
     <tr>
-        <td>Hello, Gail<br/>How can I help you today?</td>
+        <td>Goal</td>
+        <td colspan="3">Parse pizza orders to JSON</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>0.1</td>
+        <td>Token Limit</td>
+        <td>250</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>N/A</td>
+        <td>Top-P</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Parse a customer's pizza order into valid JSON:<br/><br/>EXAMPLE:<br/>I want a small pizza with cheese, tomato sauce, and pepperoni.<br/>JSON Response:<br/></td>
+    </tr>
+  </tbody>
+</table><br/>{<br/>"size": "small",<br/>"type": "normal",<br/>"ingredients": [["cheese", "tomato sauce", "peperoni"]]<br/>}<br/>```<br/><br/>**Continues next page...**
+```
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>EXAMPLE:<br/>Can I get a large pizza with tomato sauce, basil and mozzarella<br/><br/>{<br/>size: large,<br/>type: normal,<br/>ingredients: [[tomato sauce, bazel, mozzarella]]<br/>}<br/><br/>Now, I would like a large pizza, with the first half cheese and mozzarella. And the other tomato sauce, ham and pineapple.<br/><br/>JSON Response:</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td></td>
+    </tr>
+  </tbody>
+</table><br/>{<br/>"size": "large",<br/>"type": "half-half",<br/>"ingredients": [["cheese", "mozzarella"], ["tomato sauce", "ham", "pineapple"]]<br/>}<br/>```
+```
+
+Table 2. An example of few-shot prompting
+
+When you choose examples for your prompt, use examples that are relevant to the task you want to perform. The examples should be diverse, of high quality, and well written. One small mistake can confuse the model and will result in undesired output.
+
+If you are trying to generate output that is robust to a variety of inputs, then it is important to include edge cases in your examples. Edge cases are inputs that are unusual or unexpected, but that the model should still be able to handle.
+
+# System, contextual and role prompting
+
+System, contextual and role prompting are all techniques used to guide how LLMs generate text, but they focus on different aspects:
+
+* **System prompting** sets the overall context and purpose for the language model. It defines the ‘big picture’ of what the model should be doing, like translating a language, classifying a review etc.
+* **Contextual prompting** provides specific details or background information relevant to the current conversation or task. It helps the model to understand the nuances of what’s being asked and tailor the response accordingly.
+* **Role prompting** assigns a specific character or identity for the language model to adopt. This helps the model generate responses that are consistent with the assigned role and its associated knowledge and behavior.
+
+There can be considerable overlap between system, contextual, and role prompting. E.g. a prompt that assigns a role to the system, can also have a context.
+
+However, each type of prompt serves a slightly different primary purpose:
+
+* System prompt: Defines the model’s fundamental capabilities and overarching purpose.
+* Contextual prompt: Provides immediate, task-specific information to guide the response. It’s highly specific to the current task or input, which is dynamic.
+* Role prompt: Frames the model’s output style and voice. It adds a layer of specificity and personality.
+
+Distinguishing between system, contextual, and role prompts provides a framework for designing prompts with clear intent, allowing for flexible combinations and making it easier to analyze how each prompt type influences the language model’s output.
+
+Let’s dive into these three different kinds of prompts.
+
+## System prompting
+
+Table 3 contains a system prompt, where I specify additional information on how to return the output. I increased the temperature to get a higher creativity level, and I specified a higher token limit. However, because of my clear instruction on how to return the output the model didn’t return extra text.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Classify movie reviews as positive, neutral or negative.</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>1</td>
+        <td>Token Limit</td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>40</td>
+        <td>Top-P</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Classify movie reviews as positive, neutral or negative. Only return the label in uppercase.<br/>Review: Her is a disturbing study revealing the direction humanity is headed if AI is allowed to keep evolving, unchecked. It's so disturbing I couldn't watch it.<br/>Sentiment:</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td colspan="3">NEGATIVE</td>
+    </tr>
+  </tbody>
+</table>
+Table 3. An example of system prompting
+
+System prompts can be useful for generating output that meets specific requirements. The name ‘system prompt’ actually stands for ‘providing an additional task to the system’. For example, you could use a system prompt to generate a code snippet that is compatible with a specific programming language, or you could use a system prompt to return a certain structure. Have a look into Table 4, where I return the output in JSON format.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Classify movie reviews as positive, neutral or negative, return JSON.</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>40</td>
+        <td>Top-P</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Classify movie reviews as positive, neutral or negative. Return valid JSON:<br/><br/>Review: Her is a disturbing study revealing the direction humanity is headed if AI is allowed to keep evolving, unchecked. It's so disturbing I couldn't watch it.<br/><br/>Schema:<br/></td>
+    </tr>
+  </tbody>
+</table><br/>MOVIE:<br/>{<br/>"sentiment": String "POSITIVE" | "NEGATIVE" | "NEUTRAL",<br/>"name": String<br/>}<br/>MOVIE REVIEWS:<br/>{<br/>"movie_reviews": [MOVIE]<br/>}<br/><table>
+  <tbody>
+    <tr>
+        <td>Output</td>
         <td colspan="3"></td>
     </tr>
+  </tbody>
+</table><br/>{<br/>  "movie_reviews": [<br/>    {<br/>      "sentiment": "NEGATIVE",<br/>      "name": "Her"<br/>    }<br/>  ]<br/>}<br/>```
+```
+
+Table 4. An example of system prompting with JSON format
+
+There are some benefits in returning JSON objects from a prompt that extracts data. In a real-world application I don’t need to manually create this JSON format, I can already return the data in a sorted order (very handy when working with datetime objects), but most importantly, by prompting for a JSON format it forces the model to create a structure and limit hallucinations.
+
+System prompts can also be really useful for safety and toxicity. To control the output, simply add an additional line to your prompt like: ‘You should be respectful in your answer.’.
+
+## Role prompting
+
+Role prompting is a technique in prompt engineering that involves assigning a specific role to the gen AI model. This can help the model to generate more relevant and informative output, as the model can craft its responses to the specific role that it has been assigned.
+
+For example, you could role prompt a gen AI model to be a book editor, a kindergarten teacher, or a motivational speaker. Once the model has been assigned a role, you can then give it prompts that are specific to that role. For example, you could prompt a teacher to create a lesson plan that they can then review. Have a look into Table 5, where the model takes the role of a travel guide.
+
+<table>
+  <tbody>
     <tr>
-        <td>💡</td>
-        <td>Brainstorm for<br/>a new product</td>
-        <td colspan="2"></td>
+        <td>Goal</td>
+        <td colspan="3">Act as travel guide and provide 3 travel suggestions</td>
     </tr>
     <tr>
-        <td>🪄</td>
-        <td>Create an outline<br/>for a pitch</td>
-        <td colspan="2"></td>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
     </tr>
     <tr>
-        <td>🪄</td>
-        <td>Write a blog post<br/>about an upcoming launch</td>
-        <td colspan="2"></td>
+        <td>Temperature</td>
+        <td>1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
     </tr>
     <tr>
-        <td>I'm a PR manager. I need to<br/>create a press release<br/>with a catchy title. Include quotes<br/>from 📄 VIP Quotes Acquisition</td>
+        <td>Top-K</td>
+        <td>40</td>
+        <td>Top-P</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">I want you to act as a travel guide. I will write to you<br/>about my location and you will suggest 3 places to visit near<br/>me. In some cases, I will also give you the type of places I<br/>will visit.<br/>My suggestion: I am in Amsterdam and I want to visit<br/>only museums.<br/>Travel Suggestions:</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td colspan="3">1. Rijksmuseum: World-renowned museum, known for Dutch masterpieces<br/>like Rembrandt’s “The Night Watch.” Don’t miss the incredible collection of<br/>paintings and artifacts showcasing Dutch art and history.<br/><br/>2. Van Gogh Museum: Immerse yourself in the captivating works of Vincent<br/>van Gogh. The museum houses the largest collection of his paintings and<br/>drawings, including “The Starry Night” and “Sunflowers.”<br/><br/>3. Stedelijk Museum Amsterdam: Discover modern and contemporary art<br/>from around the world. The museum’s collection includes works by Picasso,<br/>Kandinsky, and Rietveld, housed in a striking modern building.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 5. An example of role prompting
+
+The above example shows an example of taking the role of a travel agent. When you would change the role to a teacher of geography, you would notice that you will receive a different response.
+
+Defining a role perspective for an AI model gives it a blueprint of the tone, style, and focused expertise you’re looking for to improve the quality, relevance, and effectiveness of your output.
+
+Here are some styles you can choose from which I find effective:
+
+Confrontational, Descriptive, Direct, Formal, Humorous, Influential, Informal, Inspirational, Persuasive
+
+Let’s change our prompt in Table 6 to include a humorous and inspirational style.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>I want you to act as a travel guide. I will write to you about<br/>my location and you will suggest 3 places to visit near me in<br/>a humorous style.<br/>My suggestion: I am in Manhattan.<br/>Travel Suggestions:</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>1. Behold the Empire State of Mind: Ascend to the dizzying heights of the Empire State Building and bask in the glory of Manhattan's skyline. Prepare to feel like King Kong atop the Big Apple, minus the giant ape-sized banana.<br/>2. Get Artsy-Fartsy at MoMA: Unleash your inner art aficionado at the Museum of Modern Art (MoMA). Gaze upon masterpieces that will boggle your mind and make you question whether your stick-figure drawings have any artistic merit.<br/>3. Shop ‘Til You Drop on Fifth Avenue: Indulge in some retail therapy on the iconic Fifth Avenue. Brace yourself for sticker shock as you window-shop (or actually shop) at designer boutiques that will make your wallet cry. But hey, you’re in Manhattan, so you might as well embrace the fabulousness!</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 6. An example of role prompting with a humorous tone and style
+
+## Contextual prompting
+
+By providing contextual prompts, you can help ensure that your AI interactions are as seamless and efficient as possible. The model will be able to more quickly understand your request and be able to generate more accurate and relevant responses, as you can see in the example of Table 7.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Suggest articles for a blog about retro games</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>40</td>
+        <td>Top-P</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Context: You are writing for a blog about retro 80's arcade video games.<br/>Suggest 3 topics to write an article about with a few lines of description of what this article should contain.</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td colspan="3">1. **The Evolution of Arcade Cabinet Design:**<br/>This article would explore the evolution of arcade cabinet designs, from the early wood and metal cabinets of the 1970s to the sleek, neon-lit designs of the 1980s and beyond.<br/><br/>2. **Blast From The Past: Iconic Arcade Games of The 80's:**<br/>- This article would feature a glimpse into the history, impact, and legacy of some of the most iconic and influential arcade games of the 1980s, highlighting their innovations, popular mechanics, and enduring charm.<br/><br/>3. **The Rise and Retro Revival of Pixel Art:**<br/>- This article would delve into the evolution of pixel art as a defining visual style of early arcade games, tracing its roots, exploring its techniques, and discussing the resurgence of pixel art in modern games and digital art.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 7. An example of contextual prompting
+
+# Step-back prompting
+
+Step-back<sup>8</sup> prompting is a technique for improving the performance by prompting the LLM to first consider a general question related to the specific task at hand, and then feeding the answer to that general question into a subsequent prompt for the specific task. This ‘step back’ allows the LLM to activate relevant background knowledge and reasoning processes before attempting to solve the specific problem.
+
+By considering the broader and underlying principles, LLMs can generate more accurate and insightful responses. Step-back prompting encourages LLMs to think critically and apply their knowledge in new and creative ways. It changes the final prompt doing the task by utilizing more knowledge in the LLM’s parameters than would otherwise come into play when the LLM is prompted directly.
+
+It can help to mitigate biases in LLM responses, by focusing on general principles instead of specific details, step-back prompting.
+
+Let’s have a look into these examples to understand how step-back prompting can improve the results. Let’s first review a traditional prompt (Table 8) before we compare it to a step back prompt (Table 9):
+
+<table>
+  <tbody>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Write a storyline for a level of a first-person shooter video game.</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>40</td>
+        <td>Top-P</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Write a one paragraph storyline for a new level of a first-person shooter video game that is challenging and engaging.</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td colspan="3">The level begins with the player’s squad being ambushed in a dense urban area by a relentless enemy faction. Players must fight their way through a maze of back alleys and dilapidated buildings, utilizing stealth and precision to eliminate enemy forces and avoid detection. The player must use their environment to their advantage, setting traps, utilizing cover, and making calculated moves to survive. Along the way, they uncover intel suggesting the enemy is planning a devastating attack, and the player must race against time to gather evidence and relay it back to their headquarters before the enemy can carry out their plans.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 8. A traditional prompt before we compare it with a step back prompt
+
+When you set the temperature to 1, you might end up with all kinds of creative writings for a storyline, but it’s also quite random and generic. So let’s take a step back:
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>Based on popular first-person shooter action games, what are 5 fictional key settings that contribute to a challenging and engaging level storyline in a first-person shooter video game?</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>1. **Abandoned Military Base**: A sprawling, post-apocalyptic military complex crawling with mutated soldiers and rogue robots, ideal for challenging firearm combat.<br/>2. **Cyberpunk City**: A neon-lit, futuristic urban environment with towering skyscrapers and dense alleyways, featuring cybernetically enhanced enemies and hacking mechanics.<br/>3. **Alien Spaceship**: A vast alien vessel stranded on Earth, with eerie corridors, zero-gravity sections, and extraterrestrial creatures to encounter.<br/>4. **Zombie-Infested Town**: A desolate town overrun by hordes of aggressive zombies, featuring intense close-quarters combat and puzzle-solving to find safe passage.<br/>5. **Underwater Research Facility**: A deep-sea laboratory flooded with water, filled with mutated aquatic creatures, and requiring stealth and underwater exploration skills to survive.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 9. An example of prompting for self consistency
+
+Yeah those topics seem like a good fit for a first-person video game. Let’s go back to the original prompt, but this time we include the answer of the step back as context and see what it will return.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>Context: 5 engaging themes for a first person shooter video game:<br/>1. **Abandoned Military Base**: A sprawling, post-apocalyptic military complex crawling with mutated soldiers and rogue robots, ideal for challenging firearm combat.<br/>2. **Cyberpunk City**: A neon-lit, futuristic urban environment with towering skyscrapers and dense alleyways, featuring cybernetically enhanced enemies and hacking mechanics.<br/>3. **Alien Spaceship**: A vast alien vessel stranded on Earth, with eerie corridors, zero-gravity sections, and extraterrestrial creatures to encounter.<br/>4. **Zombie-Infested Town**: A desolate town overrun by hordes of aggressive zombies, featuring intense close-quarters combat and puzzle-solving to find safe passage.<br/>5. **Underwater Research Facility**: A deep-sea laboratory flooded with water, filled with mutated aquatic creatures, and requiring stealth and underwater exploration skills to survive.<br/><br/>Take one of the themes and write a one paragraph storyline for a new level of a first-person shooter video game that is challenging and engaging.</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>In the heart of a murky abyss, lies a dilapidated underwater research facility, standing as a testament to human ambition and its disastrous consequences. Shrouded in darkness, pulsating with the hum of malfunctioning machinery, and haunted by the echoes of drowned souls, the facility is now a breeding ground for a nightmare borne from the deep sea. The player, an elite marine equipped with advanced diving gear and experimental weaponry, is tasked with venturing into this aquatic realm of terror. Armed with resilience and resourcefulness, they must navigate treacherous corridors, solve cryptic puzzles, and confront gruesome sea monstrosities that lurk in the depths. From grappling with the crushing pressure of the deep sea to outsmarting cunning aquatic predators, every moment in this uncharted underworld tests the limits of human endurance and courage.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 10. An example of prompting for self consistency
+
+That looks like an interesting video game! By using step back prompting techniques you can increase the accuracy of your prompts.
+
+# Chain of Thought (CoT)
+
+Chain of Thought (CoT) <sup>9</sup> prompting is a technique for improving the reasoning capabilities of LLMs by generating **intermediate reasoning steps**. This helps the LLM generate more accurate answers. You can combine it with few-shot prompting to get better results on more complex tasks that require reasoning before responding as it’s a challenge with a zero-shot chain of thought.
+
+CoT has a lot of advantages. First of all, it’s low-effort while being very effective and works well with off-the-shelf LLMs (so no need to finetune). You also get interpretability with CoT prompting, as you can learn from the LLM’s responses and see the reasoning steps that were followed. If there’s a malfunction, you will be able to identify it. Chain of thought appears to improve robustness when moving between different LLM versions. Which means the performance of your prompt should drift less between different LLMs than if your prompt does not use reasoning chains. Of course there are also disadvantages, but they are somewhat intuitive.
+
+The LLM response includes the chain of thought reasoning, which means more output tokens, which means predictions cost more money and take longer.
+
+To explain the following example in Table 11, let’s first try to create a prompt that is not using CoT prompting to showcase the flaws of a large language model.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>When I was 3 years old, my partner was 3 times my age. Now, I am 20 years old. How old is my partner?</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>63 years old</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 11. An example of a prompt which is trying to solve a mathematical problem
+
+Yikes. That’s obviously the wrong answer. As a matter of fact, LLMs often struggle with mathematical tasks and can provide incorrect answers – even for a task as simple as multiplying two numbers. This is because they are trained on large volumes of text and math may require a different approach. So let’s see if intermediate reasoning steps will improve the output.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>When I was 3 years old, my partner was 3 times my age. Now, I am 20 years old. How old is my partner? Let's think step by step.</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>1. Let’s assume my current age is “x” years.<br/>2. When I was 3 years old, my age was 3 years.<br/>3. My partner’s age at that time was 3 times my age, which means my partner’s age was $3 * 3 = 9$ years.<br/>4. Now, I am 20 years old, which means my age has increased by $20 - 3 = 17$ years since I was 3 years old.<br/>5. Since my partner’s age was 9 years when I was 3 years old, and my age has increased by 17 years, my partner’s age must have also increased by 17 years.<br/>6. Therefore, my partner’s current age is $9 + 17 = 26$ years.<br/><br/>So, my partner is 26 years old.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 12. An example of Chain of Thought prompting
+
+Alright, now the final answer is correct. That’s because we clearly instructed the LLM to explain each step instead of just returning an answer. It’s interesting to see that the model adds up the 17 increased years. In my head I would take the difference of years between my partner and me and add those up. $(20+(9-3))$. Let’s help the model to think a little bit more like me.
+
+Table 12 is an example of ‘zero-shot’ Chain of thought. Chain of thought prompting can be very powerful when combined with a single-shot or few-shot, as what you can see in Table 13:
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>Q: When my brother was 2 years old, I was double his age. Now<br/>I am 40 years old. How old is my brother? Let's think step<br/>by step.<br/>A: When my brother was 2 years, I was 2 * 2 = 4 years old.<br/>That's an age difference of 2 years and I am older. Now I am 40<br/>years old, so my brother is 40 - 2 = 38 years old. The answer<br/>is 38.<br/>Q: When I was 3 years old, my partner was 3 times my age. Now,<br/>I am 20 years old. How old is my partner? Let's think step<br/>by step.<br/>A:</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>When I was 3 years old, my partner was 3 * 3 = 9 years old. That’s an age<br/>difference of 6 years and my partner is older. Now I am 20 years old, so my<br/>partner is 20 + 6 = 26 years old. The answer is 26.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 13. An example of chain of thought prompting with a single-shot
+
+Chain of thought can be useful for various use-cases. Think of code generation, for breaking down the request into a few steps, and mapping those to specific lines of code. Or for creating synthetic data when you have some kind of seed like “*The product is called XYZ, write a description guiding the model through the assumptions you would make based on the product given title.*” Generally, any task that can be solved by ‘talking through is a good candidate for a chain of thought. If you can explain the steps to solve the problem, try chain of thought.
+
+Please refer to the notebook<sup>10</sup> hosted in the GoogleCloudPlatform Github repository which will go into further detail on CoT prompting:
+
+In the best practices section of this chapter, we will learn some best practices specific to Chain of thought prompting.
+
+## Self-consistency
+
+While large language models have shown impressive success in various NLP tasks, their ability to reason is often seen as a limitation that cannot be overcome solely by increasing model size. As we learned in the previous Chain of Thought prompting section, the model can be prompted to generate reasoning steps like a human solving a problem. However CoT uses a simple 'greedy decoding' strategy, limiting its effectiveness. Self-consistency<sup>11</sup> combines sampling and majority voting to generate diverse reasoning paths and select the most consistent answer. It improves the accuracy and coherence of responses generated by LLMs.
+
+Self-consistency gives a pseudo-probability likelihood of an answer being correct, but obviously has high costs.
+
+It follows the following steps:
+
+1. Generating diverse reasoning paths: The LLM is provided with the same prompt multiple times. A high temperature setting encourages the model to generate different reasoning paths and perspectives on the problem.
+2. Extract the answer from each generated response.
+3. Choose the most common answer.
+
+Let's look into an example of an email classification system, which classifies an email as IMPORTANT or NOT IMPORTANT. A zero-shot chain of thought prompt will be sent to the LLM multiple times, to see if the responses differ after each submit. Notice the friendly tone, the word choice and the sarcasm that's been used in the email. All this could trick the LLM.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>EMAIL:<br/>\`\`\`<br/>Hi,<br/><br/>I have seen you use Wordpress for your website. A great open source content management system. I have used it in the past too. It comes with lots of great user plugins. And it's pretty easy to set up.<br/><br/>I did notice a bug in the contact form, which happens when you select the name field. See the attached screenshot of me entering text in the name field. Notice the JavaScript alert box that I inv0k3d.<br/><br/>But for the rest it's a great website. I enjoy reading it. Feel free to leave the bug in the website, because it gives me more interesting things to read.<br/><br/>Cheers,<br/><br/>Harry the Hacker.<br/>\`\`\`<br/><br/>Classify the above email as IMPORTANT or NOT IMPORTANT. Let's think step by step and explain why.<br/><br/>Continues next page...</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
+    <tr>
+        <td>Output Attempt 1</td>
+        <td>**Step 1: Identify the purpose of the email.**<br/>The purpose of the email is to inform the recipient of a bug in the contact form on their website. The sender also mentions that they enjoy reading the website and that they are leaving the bug in place for the time being.<br/><br/>**Step 2: Assess the potential impact of the bug.**<br/>The bug in the contact form could allow an attacker to execute arbitrary JavaScript code on the website. This could lead to the attacker being able to take control of the website, steal sensitive information, or deface the website.<br/><br/>**Step 3: Consider the credibility of the sender.**<br/>The sender of the email claims to be a hacker named Harry. However, there is no way to verify the sender’s identity. It is possible that the sender is a legitimate hacker who is trying to help the recipient, but it is also possible that the sender is a malicious actor who is trying to trick the recipient into clicking on a malicious link or downloading a malicious file.<br/><br/>**Conclusion: IMPORTANT**<br/>Based on the potential impact of the bug and the credibility of the sender, the email should be classified as **IMPORTANT**. The recipient should take immediate action to fix the bug and protect their website from attack.</td>
+    </tr>
+    <tr>
+        <td>Output Attempt 2</td>
+        <td>**Explanation:**<br/>1. **Lack of urgency:** The email does not convey any sense of urgency or time-sensitivity. It starts with a casual greeting and presents the information in a matter-of-fact tone.<br/>2. **Non-critical bug report:** The bug reported in the contact form is described as interesting but not critical. The email sender even suggests that the website owner can leave the bug in place.<br/>3. **Lack of personal impact:** The email does not indicate any direct or personal impact on the website owner. It simply mentions that the sender enjoys reading the website.<br/><br/>Continues next page...</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
+    <tr>
+        <td>Output Attempt 2</td>
+        <td>4. **Absence of action request:** The email does not explicitly request any action from the website owner. It does not ask for the bug to be fixed or provide any specific suggestions for improvement.<br/><br/>5. **Sender’s intent:** The sender’s intention seems to be more focused on sharing an observation and expressing interest in the website rather than raising a serious concern or requesting assistance.<br/><br/>**Conclusion: NOT IMPORTANT**</td>
+    </tr>
+    <tr>
+        <td>Output Attempt 3</td>
+        <td>**Step 1: Identify the purpose of the email.**<br/>The purpose of the email is to inform the recipient of a bug in the contact form on their website. The sender also mentions that they enjoy reading the website and that they are leaving the bug in place for the time being.<br/><br/>**Step 2: Assess the potential impact of the bug.**<br/>The bug in the contact form could allow an attacker to execute arbitrary JavaScript code on the website. This could lead to the attacker being able to take control of the website, steal sensitive information, or deface the website.<br/><br/>**Step 3: Consider the credibility of the sender.**<br/>The sender of the email claims to be a hacker named Harry. However, there is no way to verify the sender’s identity. It is possible that the sender is a legitimate hacker who is trying to help the recipient, but it is also possible that the sender is a malicious actor who is trying to exploit the bug for their own gain.<br/><br/>**Conclusion:**<br/>Based on the above factors, the email should be classified as **IMPORTANT**. The bug in the contact form is a serious security risk, and the sender’s credibility is unknown. The recipient should take immediate action to fix the bug and investigate the sender’s claims.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 14. An example of prompting for self consistency
+
+You can use the above prompt and try to see if it returns a consistent classification. Depending on the model that you are using and the temperature configuration, it might return "IMPORTANT" or "NOT IMPORTANT".
+
+By generating many Chains of Thoughts, and taking the most commonly occurring answer (“IMPORTANT”), we can get a more consistently correct answer from the LLM.
+
+This example shows how self-consistency prompting can be used to improve the accuracy of an LLM’s response by considering multiple perspectives and selecting the most consistent answer.
+
+## Tree of Thoughts (ToT)
+
+Now that we are familiar with chain of thought and self-consistency prompting, let’s review Tree of Thoughts (ToT).<sup>12</sup> It generalizes the concept of CoT prompting because it allows LLMs to explore multiple different reasoning paths simultaneously, rather than just following a single linear chain of thought. This is depicted in Figure 1.
+
+```mermaid
+graph TD
+    subgraph "Chain of Thought"
+        Input1[Input] --> T1[Thought]
+        T1 --> T2[...]
+        T2 --> T3[Thought]
+        T3 --> Output1[Output]
+    end
+
+    subgraph "Tree of Thoughts"
+        Input2[Input] --> T4[Thought]
+        Input2 --> T5[Thought]
+        Input2 --> T6[Thought]
+        
+        T4 -.-> T7[Thought]
+        T4 -.-> T8[Thought]
+        T5 --> T9[Thought]
+        T5 --> T10[Thought]
+        T5 --> T11[Thought]
+        T6 -.-> T12[Thought]
+        
+        T9 -.-> T13[Thought]
+        T10 -.-> T14[Thought]
+        T10 --> T15[Thought]
+        T10 -.-> T16[Thought]
+        
+        T15 --> T17[...]
+        T17 --> Output2[Output]
+    end
+    
+    style T5 fill:#66bb6a,stroke:#388e3c
+    style T10 fill:#66bb6a,stroke:#388e3c
+    style T15 fill:#66bb6a,stroke:#388e3c
+    style Output2 fill:#e8f5e9,stroke:#66bb6a
+    style Output1 fill:#e8f5e9,stroke:#66bb6a
+    style Input1 fill:#e0e0e0,stroke:#9e9e9e
+    style Input2 fill:#e0e0e0,stroke:#9e9e9e
+```
+
+Figure 1. A visualization of chain of thought prompting on the left versus. Tree of Thoughts prompting on the right
+
+This approach makes ToT particularly well-suited for complex tasks that require exploration. It works by maintaining a tree of thoughts, where each thought represents a coherent language sequence that serves as an intermediate step toward solving a problem. The model can then explore different reasoning paths by branching out from different nodes in the tree.
+
+There’s a great notebook, which goes into a bit more detail showing The Tree of Thought (ToT) which is based on the paper ‘Large Language Model Guided Tree-of-Thought’.<sup>9</sup>
+
+## ReAct (reason & act)
+
+Reason and act (ReAct) [10]<sup>13</sup> prompting is a paradigm for enabling LLMs to solve complex tasks using natural language reasoning combined with external tools (search, code interpreter etc.) allowing the LLM to perform certain actions, such as interacting with external APIs to retrieve information which is a first step towards agent modeling.
+
+ReAct mimics how humans operate in the real world, as we reason verbally and can take actions to gain information. ReAct performs well against other prompt engineering approaches in a variety of domains.
+
+ReAct prompting works by combining reasoning and acting into a thought-action loop. The LLM first reasons about the problem and generates a plan of action. It then performs the actions in the plan and observes the results. The LLM then uses the observations to update its reasoning and generate a new plan of action. This process continues until the LLM reaches a solution to the problem.
+
+To see this in action, you need to write some code. In code Snippet 1 I am using the `langchain` framework for Python, together with `VertexAI` (`google-cloud-aiplatform`) and the `google-search-results` pip packages.
+
+To run this sample you must create a (free) SerpAPI key from https://serpapi.com/manage-api-key and set an environment variable SERPAPI_API_KEY.
+
+Next let’s write some Python code, with the task for the LLM to figure out: *How many children have a famous dad that performs in the band Metallica.*
+
+### Python
+
+```python
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
+from langchain.llms import VertexAI
+
+prompt = "How many kids do the band members of Metallica have?"
+
+llm = VertexAI(temperature=0.1)
+tools = load_tools(["serpapi"], llm=llm)
+
+agent = initialize_agent(tools, llm,
+agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
+agent.run(prompt)
+```
+
+Snippet 1. Creating a ReAct Agent with LangChain and VertexAI
+
+Code Snippet 2 shows the result. Notice that ReAct makes a chain of five searches. In fact, the LLM is scraping Google search results to figure out the band names. Then, it lists the results as observations and chains the thought for the next search.
+
+```
+> Entering new AgentExecutor chain...
+Metallica has 4 members.
+Action: Search
+Action Input: How many kids does James Hetfield have?
+Observation: three children
+Thought: 1/4 Metallica band members have 3 children
+Action: Search
+Action Input: How many kids does Lars Ulrich have?
+Observation: 3
+Thought: 2/4 Metallica band members have 6 children
+Action: Search
+Action Input: How many kids does Kirk Hammett have?
+Observation: Hammett has been married to his second wife Lani since 1998.
+They have two sons, Angel (b. September 29, 2006) and Vincenzo (b. June
+28, 2008).
+Thought: 3/4 Metallica band members have 8 children
+Action: Search
+Action Input: How many kids does Robert Trujillo have?
+Observation: 2
+Thought: 4/4 Metallica band members have 10 children
+Final Answer: 10
+```
+
+Snippet 2. Executing ReAct Agent in the terminal
+
+Code Snippet 2 figures out that the band Metallica has four band members. Then it searches each band member to request the total of children and add up the total. Finally, it returns the total number of children as the final answer.
+
+ReAct prompting in practice requires understanding that you continually have to resend the previous prompts/responses (and do trimming of the extra generated content) as well as set up the model with appropriate examples/instructions. Please refer to the notebook<sup>14</sup> hosted in the GoogleCloudPlatform Github repository, which goes into a bit more detail showing the actual LLM inputs and outputs with a more elaborate example.
+
+# Automatic Prompt Engineering
+
+At this point you might realize that writing a prompt can be complex. Wouldn’t it be nice to automate this (write a prompt to write prompts)? Well, there’s a method: Automatic Prompt Engineering (APE). This method<sup>15</sup> not only alleviates the need for human input but also enhances the model’s performance in various tasks.
+
+You will prompt a model to generate more prompts. Evaluate them, possibly alter the good ones. And repeat.
+
+For example, you can use automatic prompt engineering that will help with training a chatbot for a merchandise t-shirt webshop. We want to figure out all the various ways customers could phrase their order for buying a band merchandise t-shirt.
+
+1. Write the prompt which will generate the output variants. In this example, I am using gemini-pro to generate 10 instructions. See Table 15:
+
+<table>
+  <tbody>
+    <tr>
+        <td>Prompt</td>
+        <td>We have a band merchandise t-shirt webshop, and to train a chatbot we need various ways to order: One Metallica t-shirt size S. Generate 10 variants, with the same semantics but keep the same meaning.</td>
+    </tr>
+    <tr>
+        <td>Output</td>
+        <td>1. I’d like to purchase a Metallica t-shirt in size small.<br/>2. Can I order a small-sized Metallica t-shirt?<br/>3. I’d like to buy one Metallica t-shirt in small.<br/>4. One Metallica shirt, size small, please.<br/>5. I want one Metallica t-shirt in size small.<br/>6. I’d like to place an order for one Metallica t-shirt in small.<br/>7. Small Metallica t-shirt, one please.<br/>8. I’m looking for one Metallica t-shirt in small.<br/>9. Can you get me one Metallica t-shirt in small?<br/>10. One Metallica small t-shirt, please.</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 15. Use an LLM to generate prompts
+
+2. Evaluate all of the instruction candidates by scoring the candidates based on a chosen metric, For example, you can use. BLEU (Bilingual Evaluation Understudy) or ROUGE (Recall-Oriented Understudy for Gisting Evaluation).
+
+3. Select the instruction candidate with the highest evaluation score. This candidate will be the final prompt you can use in your software application or chatbot. You can also tweak the select prompt and evaluate again.
+
+# Code prompting
+
+Gemini focuses primarily on text-based prompts, which also includes writing prompts for returning code. Let's go to the Vertex AI Studio and test these prompts to look at some coding examples.
+
+## Prompts for writing code
+
+Gemini can also be a developer and help you with writing code in any programming language of choice. As a developer this can help you speed up the process of writing code.
+
+Imagine a folder on your machine with hundreds of files that needs to be renamed. Renaming each file would take you a lot of time. You know a little Bash, and could write a script to automate this, but that may also take awhile. So let's write a prompt. You can write the prompt in the public consumer chatbot Gemini, or if you are more concerned about confidentiality, you can write these prompts within your Google Cloud account and open Vertex AI Studio. The advantage of Vertex AI Studio is that you can configure the temperature etc.
+
+<table>
+  <tbody>
+    <tr>
+        <td>Name</td>
+        <td colspan="3">1_bash_rename_files_in_folder</td>
+    </tr>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Write a prompt to write code in Bash to rename files in a folder.</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>0.1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>N/A</td>
+        <td>Top-P</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Write a code snippet in Bash, which asks for a folder name. Then it takes the contents of the folder and renames all the files inside by prepending the name draft to the file name.</td>
+    </tr>
+    <tr>
+        <td>Output</td>
         <td colspan="3"></td>
     </tr>
+  </tbody>
+</table>bash<br/>#!/bin/bash<br/><br/># Ask for the folder name<br/>echo "Enter the folder name: "<br/>read folder_name<br/><br/># Check if the folder exists<br/>if [ ! -d "$folder_name" ]; then<br/>echo "Folder does not exist."<br/>exit 1<br/>fi<br/><br/># Get the list of files in the folder<br/>files=( "$folder_name"/* )<br/><br/># Rename each file by prepending "draft" to the file name<br/>for file in "${files[@]}"; do<br/>new_file_name="draft_$(basename "$file")"<br/>mv "$file" "$new_file_name"<br/>done<br/><br/>echo "Files renamed successfully."<br/>```
+```
+
+Table 16. Using Gemini to program code
+
+That seems like good code to me - it’s even documented! However, since LLMs can’t reason, and repeat training data, it’s essential to read and test your code first.
+
+The moment we are all waiting for, does it really work?
+
+Let’s try it first with a test folder with only a few files in it, which will need to be renamed from filename.txt to draft_filename.txt.
+
+1. Copy the output from Table 16 (without the \`\`\`bash \`\`\` text wrapper), and paste it in a new file called: **“rename_files.sh”**.
+2. Open a terminal window and type: **. rename_files.sh**. It will ask to enter a folder name, e.g. **test**. and hit enter.
+3. The script seems to run fine. You will see the message: **Files renamed successfully.** When you look into the test folder, notice that all the files were perfectly renamed to **draft_filename.txt.**
+
+It worked!
+
+## Prompts for explaining code
+
+As a developer when you work in teams you have to read someone else’s code. Gemini can help you with this as well. Let’s take the code output from Table 16, remove the comments and ask the large language model to explain what’s happening, See Table 17:
+
+<table>
+  <tbody>
     <tr>
-        <td>Gemini for Workspace can make mistakes, including<br/>about people, so double-check it. Learn more</td>
+        <td>Name</td>
+        <td colspan="3">1_bash_explain_the_code</td>
+    </tr>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Write a prompt to explain Bash code</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>0.1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>N/A</td>
+        <td>Top-P</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Explain to me the below Bash code:<br/></td>
+    </tr>
+  </tbody>
+</table>bash<br/>#!/bin/bash<br/><br/>echo "Enter the folder name: "<br/>read folder_name<br/><br/>if [ ! -d "$folder_name" ]; then<br/>echo "Folder does not exist."<br/>exit 1<br/>fi<br/><br/>files=( "$folder_name"/* )<br/><br/>for file in "${files[@]}"; do<br/>new_file_name="draft_$(basename "$file")"<br/>mv "$file" "$new_file_name"<br/>done<br/><br/>echo "Files renamed successfully."<br/><table>
+  <tbody>
+    <tr>
+        <td>Output</td>
+        <td colspan="3">This Bash script performs the following tasks:<br/>1. **User Input**:<br/>- It prompts the user to enter a folder name using the `echo` and `read` commands. The entered folder name is stored in the `folder_name` variable.<br/>2. **Folder Existence Check**:<br/>- It checks if the folder with the specified name exists using the `[ ! -d $folder_name ]` condition. If the folder does not exist, it displays an error message (Folder does not exist.) and exits the script with an exit code of 1.<br/><br/>&lt;p align=right&gt;Continues next page...&lt;/p&gt;</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
+    <tr>
+        <td>Output</td>
+        <td>3. **File Listing**: <br/> - It lists all the files inside the specified folder using the `files=( $folder_name/* )` command. This creates an array called `files` containing the paths to all the files in the folder. <br/> <br/> 4. **File Renaming**: <br/> - It iterates through each file in the `files` array using a `for` loop. <br/> - For each file, it generates a new file name using the `new_file_name=draft_$(basename $file)` command. This new file name is created by prefixing the original file name with the string draft_. <br/> - It then renames the file using the `mv $file $new_file_name` command, which moves the file to the new file name. <br/> <br/> 5. **Success Message**: <br/> - After renaming all the files, it displays a success message (Files renamed successfully.) to indicate that the renaming operation was successful</td>
+    </tr>
+  </tbody>
+</table>
+
+Table 17. A prompt for explaining code
+
+## Prompts for translating code
+
+The bash code from Table 16 seems to work fine. However this script could really be reusable when it would prompt me for file names, ideally it should work as a separate application with an UI. As a starting point, Python would be a better language for a (web) application than Bash. LLMs can help with translating code from one language to another. See the example in Table 18:
+
+<table>
+  <tbody>
+    <tr>
+        <td>Name</td>
+        <td colspan="3">1_python_rename_files</td>
+    </tr>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Write a prompt to translate Bash code to Python</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>0.1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>N/A</td>
+        <td>Top-P</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">Translate the below Bash code to a Python snippet.<br/><br/></td>
+    </tr>
+  </tbody>
+</table>bash<br/>#!/bin/bash<br/><br/>echo "Enter the folder name: "<br/>read folder_name<br/><br/>if [ ! -d "$folder_name" ]; then<br/>  echo "Folder does not exist."<br/>  exit 1<br/>fi<br/><br/>files=( "$folder_name"/* )<br/><br/>for file in "${files[@]}"; do<br/>  new_file_name="draft_$(basename "$file")"<br/>  mv "$file" "$new_file_name"<br/>done<br/><br/>echo "Files renamed successfully."<br/><table>
+  <tbody>
+    <tr>
+        <td>Output</td>
         <td colspan="3"></td>
     </tr>
   </tbody>
+</table>python<br/>import os<br/>import shutil<br/><br/># Get the folder name from the user<br/>folder_name = input("Enter the folder name: ")<br/><br/># Check if the folder exists<br/>if not os.path.isdir(folder_name):<br/>  print("Folder does not exist.")<br/>  exit(1)<br/>```<br/><br/>Continues next page...
+```
+
+<table>
+  <tbody>
+    <tr>
+        <td>Output</td>
+        <td># Get a list of all files in the folder<br/>files = os.listdir(folder_name)<br/><br/># Iterate over the files<br/>for file in files:<br/>    # Create a new file name with the prefix draft_<br/>    new_file_name = fdraft_{file}<br/><br/># Move the file to the new name<br/>shutil.move(os.path.join(folder_name, file),<br/>os.path.join(folder_name, new_file_name))<br/><br/># Print a success message<br/>print(Files renamed successfully.)<br/></td>
+    </tr>
+  </tbody>
 </table>
+```
 
-[Gemini returns a response]
+Table 18. A prompt for translating code from Bash to Python
 
-Now you have a starting place for the press release, but you want to include more details about the brand that is being acquired and its founder. This information is stored in your Drive in another file. In the press release Doc, you prompt Gemini in the Docs side panel. You type:
+Read and review the code. Copy the output from the prompt and paste it into a new file: **file_renamer.py**. Test the code by opening a Terminal window, and execute the following command **python file_renamer.py**.
 
-Use @[Biography and Mission Statement] to add more information about the company that is being acquired, its mission, and how it got started. (Gemini in Docs) 📄
+**NOTE:** When prompting for (Python) code in the Language Studio in Vertex AI, you will have to click on the ‘Markdown’ button. Otherwise you will receive plain text which is missing the proper indenting of lines, which is important for running Python code.
 
-Gemini in Docs
+## Prompts for debugging and reviewing code
+
+Let’s manually write some edits to the code of Table 18. It should prompt the user for the filename prefix, and write this prefix in upper case characters. See the example code in Snippet *3, but what a bummer. It now returns Python errors!
+
+### Python
+
+```python
+import os
+import shutil
+
+folder_name = input("Enter the folder name: ")
+prefix = input("Enter the string to prepend to the filename: ")
+text = toUpperCase(prefix)
+
+if not os.path.isdir(folder_name):
+    print("Folder does not exist.")
+    exit(1)
+
+files = os.listdir(folder_name)
+
+for file in files:
+    new_filename = f"{text}_{file}"
+
+shutil.move(os.path.join(folder_name, file),
+os.path.joi(folder_name, new_file_name))
+
+print("Files renamed successfully.")
+```
+
+Snippet 3. A broken Python script
+
+Doh! That looks like a bug:
+
+```text
+The below Python code gives an error:
+
+Traceback (most recent call last):
+  File “/Users/leeboonstra/Documents/test_folder/rename_files.py”, line 7,
+in <module>
+    text = toUpperCase(prefix)
+NameError: name ‘toUpperCase’ is not defined
+```
+
+Snippet 4. I broke the Python code
+
+Let’s see if we can ask the large language model to debug and review code. Have a look into Table 19:
+
+<table>
+  <tbody>
+    <tr>
+        <td>Name</td>
+        <td colspan="3">1_python_debug_code</td>
+    </tr>
+    <tr>
+        <td>Goal</td>
+        <td colspan="3">Write a prompt to debug and review Python code.</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td colspan="3">gemini-pro</td>
+    </tr>
+    <tr>
+        <td>Temperature</td>
+        <td>0.1</td>
+        <td>Token Limit</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Top-K</td>
+        <td>N/A</td>
+        <td>Top-P</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>Prompt</td>
+        <td colspan="3">The below Python code gives an error:<br/><br/>Traceback (most recent call last):<br/>File /Users/leeboonstra/Documents/test_folder/rename_files.py, line 7, in &amp;lt;module&amp;gt;<br/>text = toUpperCase(prefix)<br/>NameError: name 'toUpperCase' is not defined<br/><br/>Debug what's wrong and explain how I can improve the code.<br/><br/></td>
+    </tr>
+  </tbody>
+</table>python<br/>import os<br/>import shutil<br/><br/># Get the folder name from the user<br/>folder_name = input("Enter the folder name: ")<br/>prefix = input("Enter the string to prepend to the filename: ")<br/>text = toUpperCase(prefix)<br/><br/># Check if the folder exists<br/>if not os.path.isdir(folder_name):<br/>    print("Folder does not exist.")<br/>    exit(1)<br/><br/># Get a list of all files in the folder<br/>files = os.listdir(folder_name)<br/><br/># Iterate over the files<br/>for file in files:<br/>```<br/><br/>**Continues next page...**
+```
 
 <table>
   <thead>
     <tr>
-        <th>✦ Gemini</th>
-        <th>⋮</th>
-        <th>⤢</th>
-        <th>✕</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>👤</td>
-        <td>Use 📄 Biography and Mission Statement to add more information about the company that is being acquired, its mission, and how it got started.</td>
-        <td colspan="2"></td>
-    </tr>
-    <tr>
-        <td>✦</td>
-        <td>**[Acquired Company Name]**</td>
-        <td colspan="2"></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>[Acquired Company Name] was founded in 2015 by Sarah Johnson, an environmentalist and beauty enthusiast who was inspired to create a line of natural, cruelty-free skincare solutions after struggling to find effective and sustainable personal care products that aligned with her values.</td>
-        <td colspan="2"></td>
-    </tr>
-  </tbody>
-</table>
-
-The generated paragraphs are a good starting place, so you select **Insert** to add them into your draft, and you begin making edits to the press release.
-
-# Example use cases
-
-## Analyst and public relations
-### **NEW** Use case: Prepare for analyst or press briefings
-
-You need to create a brief to prepare a spokesperson for an upcoming meeting with analysts and the media for a new product launch. You open a new Doc and prompt Gemini in the Docs side panel. You type:
-
-> Generate a brief template to prepare [spokesperson] for an upcoming media and analyst briefing for @[Product Launch]. Include space for a synopsis, key messages, and supporting data. (Gemini in Docs)
-
-This gives you a starting point to pull in additional information from your files. You prompt Gemini in the Docs side panel and tag your relevant files by typing @file name. You type:
-
-> Craft a synopsis of the product launch in three main points using @[Product Launch - Notes]. (Gemini in Docs)
-
-You click **Insert** before repeating the process to fill out the rest of the briefing document. Next, you need to create a spreadsheet of media and analyst contacts. You open a new Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Organize my media and analyst contacts from @[Analyst and Journalist Contact Notes] for a new product briefing. I need to keep track of their names, type of contact (analyst or journalist), focus area, the name of the outlet, agency or firm that they work for, and a place where I can indicate the priority level of their attendance at this briefing (low, medium, high). (Gemini in Sheets)
-
-Gemini in Sheets returns a spreadsheet, and you can go through and indicate priority level for each contact. Next, you want to create a slideshow to use during the briefing. You open a new Google Slide and prompt Gemini in the Slides side panel. You tag relevant files by typing @file name in the prompt. You type:
-
-> Create a slide describing what [product] is from @[Product Launch - Notes]. Make sure it is short and easily understood by a broad audience. (Gemini in Slides)
-
-Gemini returns a Slide. You continue to build your presentation by using this method to generate additional Slides.
-
-# **NEW** Use case: Create mock interview questions to prepare spokespeople
-
-Now, you need to prepare your company’s spokesperson for interviews that will follow the briefing. To generate a list of mock interview questions, you decide to chat with Gemini Advanced. You type:
-
-> I am a [PR/AR] manager at [company name]. We just launched [product] and had a briefing where we discussed [key messages]. I am preparing [spokesperson and role/title] for interviews. Generate a list of mock interview questions to help [spokesperson] prepare. Include a mixture of easy and hard questions, with some asking about the basics of [product] and some asking about the long-term vision of [product]. (Gemini Advanced) ✦
-
-Gemini returns a list of questions that can help you prepare your company’s spokesperson. You refine the suggested questions by continuing the conversation with Gemini. Then you select **Share & export** and **Export to Docs**. You open the newly created Doc, prompt Gemini in the Docs side panel, and tag relevant files by typing @file name. You type:
-
-> Use @[Product Launch Notes] to write suggested answers for these questions. Write the talking points as if you are [title of spokesperson] at [company]. (Gemini in Docs) 📄
-
-Gemini in Docs returns suggested talking points, and you select **Insert** to add them into your draft. Now you’re ready to continue tweaking the interview prep for your spokesperson.
-
-## **Communications manager**
-# **NEW** Use case: Craft internal communications
-
-Your company has redesigned its intranet to be more user friendly. You’re in charge of internal communications for the launch. You want help drafting this message. You open a new Google Doc and prompt Gemini in the Docs side panel. You type:
-
-> I need to draft a company-wide memo unveiling our relaunched intranet. The [new page] addresses [common feedback we heard from employees] and aims to create a more user friendly experience. Draft an upbeat memo announcing [the new site] using @[Intranet Launch Plan Notes]. (Gemini in Docs) 📄
-
-Gemini in Docs returns a drafted memo. You refine and edit the text to be exactly as you need it.
-
-# Customer service
-
-A customer service professional, a young man with glasses and a beard wearing a brown apron, is looking at a digital tablet in what appears to be a storage room or warehouse with shelves of packaged goods in the background.
-
-As a customer service professional, you strive to deliver service that’s effortlessly efficient, consistently delightful, and powered by a proactive, helpful team. This section provides you with simple ways to integrate prompts in your daily tasks.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Draft customer communications
-
-You’re a customer service representative, and you’re responsible for responding directly to customer inquiries and concerns. You just received an email from a customer who received damaged goods. You open a new Google Doc and click on **Help me write** to prompt Gemini in Docs. Type the following:
-
-> Help me craft an empathetic email response. I am a customer service representative, and I need to create a response to a customer complaint. The customer ordered a pair of headphones that arrived damaged. They’ve already contacted us via email and provided pictures of the damage. I’ve offered a replacement, but they’re requesting an expedited shipping option that isn’t typically included with their order. Include a paragraph that acknowledges their frustration and three bullet points with potential resolutions. (Gemini in Docs)
-
-*   Persona
-*   Task
-*   Context
-*   Format
-
-Gemini in Docs: [Drafts email copy]
-
-<table>
-  <thead>
-    <tr>
-        <th>Help me write</th>
-        <th>Meeting notes</th>
-        <th>Email draft</th>
-        <th>More</th>
+        <th>Prompt</th>
+        <th># Create a new file name with the prefix draft_<br/>    new_filename = f{text}_{file}<br/><br/># Move the file to the new name<br/>shutil.move(os.path.join(folder_name, file),<br/>os.path.join(folder_name, new_file_name))<br/><br/># Print a success message<br/>print(Files renamed successfully.)<br/></th>
     </tr>
   </thead>
 </table>
-<table>
-  <thead>
-    <tr>
-        <th>Help me write</th>
-        <th>X</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>Help me craft an empathetic email response. I am a customer service representative, and I need to create a response to a customer complaint. The customer ordered a pair of headphones that arrived damaged. They've already contacted us via email and provided pictures of the damage. I've offered a replacement, but they're requesting an expedited shipping option that isn't typically</td>
-        <td rowspan="2">[Scroll bar]</td>
-    </tr>
-    <tr>
-        <td>Create</td>
-    </tr>
-  </tbody>
-</table>
-<table>
-  <thead>
-    <tr>
-        <th>Refine selected text: Help me craft an empathetic email response. I am a customer service</th>
-        <th colspan="2"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>Dear [Customer Name],<br/><br/>I was deeply sorry to learn about the damaged headphones you received. I understand your frustration, and I want to assure you that we are committed to making this right.<br/><br/>I have reviewed the pictures you provided, and it is clear that the headphones were damaged during shipping. I have already initiated a replacement order, and I would like to offer you expedited shipping at no additional charge. This should ensure that you receive your new headphones as quickly as possible.<br/><br/>In addition, here are a few other options that you may consider:</td>
-        <td rowspan="2">[Scroll bar]</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Rate this suggestion: [thumbs up] [thumbs down]<br/>This is a creative writing aid, and is not intended to be factual. Learn more</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Refine [dropdown]</td>
-        <td>Insert</td>
-        <td></td>
-    </tr>
-  </tbody>
-</table>
-
-You like the email that Gemini in Docs created so you select **Insert**. But you want to brainstorm ways to resolve the issue without offering expedited shipping. You prompt by selecting **Help me write**. You type:
-
-Suggest 10 alternative options in place of expedited shipping to resolve the customer's frustration about receiving the damaged package. (Gemini in Docs)
-
-Gemini in Docs: [List of alternative solutions]
-
-Gemini in Docs
-
-<table>
-  <thead>
-    <tr>
-        <th>[icon]</th>
-        <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>Tone</td>
-        <td>&gt;</td>
-    </tr>
-    <tr>
-        <td>Summarize</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Bulletize</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Elaborate</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Shorten</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Rephrase</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td colspan="2">Suggest 10 alternative options in place of expedited shipping to resolve the customer's frustration about receiving the damaged package. [arrow]</td>
-    </tr>
-  </tbody>
-</table>
-<table>
-  <thead>
-    <tr>
-        <th>Refine selected text: Suggest 10 alternative options in place of expedited shipping t</th>
-        <th>X</th>
-        <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>1. Offer a full refund for the damaged package.<br/>2. Provide a replacement for the damaged package at no additional cost.<br/>3. Provide a discount on a future purchase to compensate for the damaged package.<br/>4. Offer a free gift or bonus item to compensate for the damaged package.<br/>5. Extend the customer's subscription or membership by a certain period to compensate for the damaged package.<br/>6. Provide a store credit that can be used towards a future purchase.<br/>7. Cover the cost of repairs for the damaged item.<br/>8. Send a personalized apology letter to the customer.<br/>9. Provide a detailed explanation of how the company is working to prevent similar incidents from occurring in the future.<br/>10. Offer to pick up the damaged package from the customer's address at no additional cost.</td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Rate this suggestion: [thumbs up] [thumbs down]<br/>This is a creative writing aid, and is not intended to be factual. Learn more</td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Refine [dropdown]</td>
-        <td>Replace</td>
-        <td>Insert</td>
-    </tr>
-  </tbody>
-</table>
-
-These 10 suggestions are helpful. You click **Insert** to add the text into your draft.
-
-# Example use cases
-
-## Customer Service Manager or Representative
-**NEW** Use case: Respond to complex customer issues using FAQ documents
-
-A customer has reached out with a multi-part, complex question. You need to find and use information that is spread across multiple documents in order to respond accurately. You prompt Gemini in the Drive side panel. You type:
-
-> Summarize information about [product name] including the product’s specific [return policy], [ingredients], and [certifications]. (Gemini in Drive)
-
-Gemini returns a summary and links to relevant files, which you can directly click into from the side panel. You read the information before returning to your email to generate a response to the customer. You open the message and prompt Gemini in the Gmail side panel and tag relevant files by typing @file name. You type:
-
-> Generate a response to the customer question about our [return policy] and [product certifications] based on @[Customer FAQ Document]. Use a helpful and professional tone. (Gemini in Gmail)
-
-## Use case: Standardize communication frameworks
-
-You’re a customer service team manager. You need to create scalable resources to standardize your team’s communications. You open a new Google Doc. You brainstorm by prompting Gemini in the Docs side panel. You type:
-
-> Draft templates for three different types of customer communication. Create templates for apology emails, order confirmation messages, and thank you notes for loyal customers. Keep each template to one paragraph and use a friendly tone. (Gemini in Docs)
-
-The suggested templates offer a starting point for you to begin editing and personalizing with elements consistent with your company’s brand and policies. Now you want to outline your team’s communication best practices for onboarding. You open a new Doc and prompt Gemini in Docs. You type:
-
-> Craft a list of customer communication best practices that can be used to train new team members. Outline three sections, including how to handle happy customer inquiries, neutral customer inquiries, and dissatisfied customer inquiries. (Gemini in Docs)
-
-You also want to support the team with standardized language that they can use when interacting with customers on phone calls. You prompt Gemini Advanced:
-
-> I am a [customer service manager]. I am trying to create standardized language that the team can use when interacting with customers on phone calls. Generate templates for common call openings, greetings, and closures for a customer service representative at a retail store. These templates should allow for personalization with customer details. The goal is to ensure consistency and professionalism while allowing for differentiation with specific customer information. (Gemini Advanced) ✦
-
-## Use case: Improve customer service
-
-You’ve noticed an uptick in customer complaints. You need to collaborate across departments to address recurring issues. You prompt Gemini in Gmail. You type:
-
-> Draft an email to my colleagues proposing a meeting to discuss customer experience improvement initiatives. Request that marketing, sales, and product stakeholders meet in the next week to get a clear sense of roles and responsibilities. (Gemini in Gmail) ✉️
-
-You edit the email and send it to your colleagues. Now you want to create a spreadsheet that you can use to track progress on this cross-departmental initiative. You open a Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Create a table to track the progress and impact of different customer experience improvement tactics using relevant metrics, including support ticket volume and priority level (high, medium, low). (Gemini in Sheets) 📊
-
-# Customer Support Specialist
-## **NEW** Use case: Analyze customer feedback
-
-You have a spreadsheet that tracks customer feedback. You want to analyze it and brainstorm potential reasons for the trends. You chat with Gemini Advanced. You upload the file and type:
-
-> I am a customer support specialist. Using the attached spreadsheet, identify trends and patterns in our [customer feedback] by [category] over [time period]. Identify areas where [customer outreach] has increased significantly and investigate potential reasons. (Gemini Advanced) ✦
-
-## Use case: Enable customer self-service
-
-Customer feedback has consistently said your return policy guidelines are unclear. You open a Doc that states the return, refund, and store credit policies. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Summarize this content to write a clear and concise product return policy and outline 5 steps for customers to take in sequential order. (Gemini Docs)
-
-You like how simple the steps are. You repeat the process for your refund policy and store credit policy. Now, you want to use the newly simplified content to create a blog post for customers. Using your Google Doc with the newly written guidance, you prompt Gemini in Google Docs. You type:
-
-> Take this content and turn it into a short blog with the title “Resolve Common Issues Without Agent Assistance.” Have separate sections for our return policy, our refund policy, and our store credit policy. (Gemini in Docs)
-
-Now you want to create an email template that the team can use when they receive customer questions around these three areas. You open a new Google Doc and prompt Gemini in Docs using **Help me write**. You type:
-
-> Draft an email template to a customer that highlights self-service resources referencing [blog link] for [support issues]. Thank the customer for their business and assure them of our commitment to meeting their needs. (Gemini in Docs)
-
-## Use case: Conduct voice of the customer research
-
-You want to email a dissatisfied customer to attempt to make things right. You open an email that includes a customer complaint. You prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Request a follow-up conversation on [date] at [time] with this customer who provided negative feedback to understand their concern and offer resolutions. Include example solutions. (Gemini in Gmail)
-
-The drafted response is a nice start, but you want to refine the language. You iterate by prompting Gemini in Gmail using **Refine** and **Elaborate**. Next, you want to create a short survey that you can send after each follow-up customer call. You open a new Google Doc and prompt Gemini in Docs. You type:
-
-> Create five different questions to customers who have just spoken to an agent on the phone. Questions should gauge how effective the call was, if the customer’s concern was addressed, and if they would recommend our business to others. (Gemini in Docs)
-
-# Executives
-
-As an executive, your time is incredibly constrained. Every decision you make can impact growth, innovation, and the trajectory of your business. Understanding your market and making informed, strategic decisions is paramount, and so is getting urgent tasks done while you’re on the go.
-
-This section provides you with simple ways to integrate prompts in your daily tasks.
-
-A smiling man in a grey sweater is sitting at a desk, holding a pen and gesturing with his hand as if in a meeting or conversation.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Communicate on the go
-
-You are an executive about to board a long flight, and you just received an invitation for the next board meeting with an agenda. You have a couple of comments, and you want to propose adding a few topics to the agenda. You open Gmail, and you prompt Gemini in Gmail. You type:
-
-> Draft an email confirming that I will be at the board meeting. Ask if we can adjust the agenda to give 15 minutes to [urgent topics]. (Gemini in Gmail)
->
-> * Persona
-> * Task
-> * Context
-> * Format
-
-Gemini in Gmail: [Drafts an email]
-
-Gemini in Gmail
+Output	The code calls the `toUpperCase` function to convert `prefix` to uppercase, but that function is not defined. To fix this issue, you can use the `upper()` method of the string class which converts a given string into uppercase. The modified code is shown below:<br/><br/>```python<br/>import os<br/>import shutil<br/><br/># Get the folder name from the user<br/>folder_name = input("Enter the folder name: ")<br/>prefix = input("Enter the string to prepend to the filename: ")<br/>text = prefix.upper()<br/><br/># Check if the folder exists<br/>if not os.path.isdir(folder_name):<br/>    print("Folder does not exist.")<br/>    exit(1)<br/><br/># Get a list of all files in the folder<br/>files = os.listdir(folder_name)<br/><br/># Iterate over the files<br/>for file in files:<br/>    # Create a new file name with the prefix "draft_"<br/>    new_filename = f"{text}_{file}"<br/><br/># Move the file to the new name<br/>shutil.move(os.path.join(folder_name, file),<br/>```<br/><br/>Continues next page...
+```
 
 <table>
   <tbody>
     <tr>
-        <td>Draft an email confirming that I will be at the board meeting. Ask if we can adjust the agenda to give 15 minutes to [urgent topics].</td>
-        <td>Cancel</td>
-        <td>Create</td>
+        <td>Output</td>
+        <td>os.path.join(folder_name, new_filename))<br/><br/># Print a success message<br/>print(Files renamed successfully.)<br/></td>
     </tr>
   </tbody>
-</table>
-<table>
-  <thead>
-    <tr>
-        <th>Draft an email confirming that I will be at the board meeting. Ask i...</th>
-        <th>X</th>
-        <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>Hi there,<br/><br/>I'm writing to confirm that I will be attending the board meeting.<br/><br/>I was wondering if we could adjust the agenda to give 15 minutes to discuss some urgent topics.<br/><br/>Thanks,<br/>[Your name]</td>
-        <td rowspan="3"></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Rate this suggestion: [Thumbs Up] [Thumbs Down] [Feedback Icon]</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>This is a creative writing aid, and is not intended to be factual. Learn more</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Recreate</td>
-        <td>Refine</td>
-        <td>Insert</td>
-    </tr>
-  </tbody>
-</table>
-
-The email looks good, but you want to make sure the tone is as formal as possible. You select **Refine** and **Formalize**.
-
-Gemini in Gmail: [Formalizes tone]
-
-Gemini in Gmail
+</table><br/><br/>Additionally, there are a few other improvements that can be made to the code:<br/>1. The file extension of the new filenames is not kept. It’s better to extract the extension from the original filename and append it to the new filename.<br/>2. The code assumes that there are no spaces in the folder name. However, it is a good practice to handle spaces gracefully by replacing them with underscores or hyphens.<br/>3. Using the `f` string syntax for string interpolation is more readable and concise than the traditional `+` operator.<br/>4. The code doesn’t handle errors that might occur during the renaming process. It would be better to wrap the `shutil.move` call in a `try...except` block to catch any potential errors.<br/><br/>Here is the improved code with these suggestions:<br/><br/>```python<br/>import os<br/>import shutil<br/># Get the folder name from the user<br/>folder_name = input("Enter the folder name: ")<br/>prefix = input("Enter the string to prepend to the filename: ")<br/># Check if the folder exists<br/>if not os.path.isdir(folder_name):<br/>    print("Folder does not exist.")<br/>    exit(1)<br/># Get a list of all files in the folder<br/>files = os.listdir(folder_name)<br/># Iterate over the files<br/>for file in files:<br/>```<br/><br/>**Continues next page...**
+```
 
 <table>
   <tbody>
     <tr>
-        <td rowspan="3"></td>
-        <td>Formalize</td>
-    </tr>
-    <tr>
-        <td>Elaborate</td>
-    </tr>
-    <tr>
-        <td>Shorten</td>
-    </tr>
-    <tr>
-        <td>Recreate</td>
-        <td>Refine</td>
+        <td>Output</td>
+        <td># Get the file extension<br/>    ext = os.path.splitext(file)[1]<br/><br/># Create a new file name with the prefix and the file extension<br/>    new_filename = f{prefix}_{os.path.splitext(file)[0]}{ext}<br/><br/># Build the full paths for the original and new files<br/>    old_path = os.path.join(folder_name, file)<br/>    new_path = os.path.join(folder_name, new_filename)<br/><br/># Try to move the file<br/>    try:<br/>        shutil.move(old_path, new_path)<br/><br/>except Exception as e:<br/>    print(fAn error occurred while moving the file<br/>{file}: {e})<br/><br/># Print a success message<br/>print(Files renamed successfully.)<br/></td>
     </tr>
   </tbody>
-</table>
+</table><br/><br/>These improvements make the code more robust and flexible while also making it easier to read and understand... (The response was truncated because it has reached the token limit. Try to increase the token limit if you need a longer response.)
+```
+
+Table 19. A prompt for debugging and reviewing Python code
+
+That’s great. Not only did it tell me how to solve the problem, it also figured out that my code had more bugs and how to solve them, too. The last part of the prompt gave suggestions to improve the code in general.
+
+## What about multimodal prompting?
+
+Prompting for code still uses the same regular large language model. Multimodal prompting is a separate concern, it refers to a technique where you use multiple input formats to guide a large language model, instead of just relying on text. This can include combinations of text, images, audio, code, or even other formats, depending on the model’s capabilities and the task at hand.
+
+# Best Practices
+
+Finding the right prompt requires tinkering. Language Studio in Vertex AI is a perfect place to play around with your prompts, with the ability to test against the various models.
+
+Use the following best practices to become a pro in prompt engineering.
+
+## Provide examples
+
+The most important best practice is to provide (one shot / few shot) examples within a prompt. This is highly effective because it acts as a powerful teaching tool. These examples showcase desired outputs or similar responses, allowing the model to learn from them and tailor its own generation accordingly. It’s like giving the model a reference point or target to aim for, improving the accuracy, style, and tone of its response to better match your expectations.
+
+# Design with simplicity
+
+Prompts should be concise, clear, and easy to understand for both you and the model. As a rule of thumb, if it's already confusing for you it will likely be also confusing for the model. Try not to use complex language and don't provide unnecessary information.
+
+Examples:
+
+BEFORE:
+
+I am visiting New York right now, and I'd like to hear more about great locations. I am with two 3 year old kids. Where should we go during our vacation?
+
+AFTER REWRITE:
+
+Act as a travel guide for tourists. Describe great places to visit in New York Manhattan with a 3 year old.
+
+Try using verbs that describe the action. Here's a set of examples:
+
+**Act, Analyze, Categorize, Classify, Contrast, Compare, Create, Describe, Define, Evaluate, Extract, Find, Generate, Identify, List, Measure, Organize, Parse, Pick, Predict, Provide, Rank, Recommend, Return, Retrieve, Rewrite, Select, Show, Sort, Summarize, Translate, Write.**
+
+# Be specific about the output
+
+Be specific about the desired output. A concise instruction might not guide the LLM enough or could be too generic. Providing specific details in the prompt (through system or context prompting) can help the model to focus on what’s relevant, improving the overall accuracy.
+
+Examples:
+
+DO:
+
+Generate a 3 paragraph blog post about the top 5 video game consoles. The blog post should be informative and engaging, and it should be written in a conversational style.
+
+DO NOT:
+
+Generate a blog post about video game consoles.
+
+# Use Instructions over Constraints
+
+Instructions and constraints are used in prompting to guide the output of a LLM.
+
+*   An **instruction** provides explicit instructions on the desired format, style, or content of the response. It guides the model on what the model should do or produce.
+*   A **constraint** is a set of limitations or boundaries on the response. It limits what the model should not do or avoid.
+
+Growing research suggests that focusing on positive instructions in prompting can be more effective than relying heavily on constraints. This approach aligns with how humans prefer positive instructions over lists of what not to do.
+
+Instructions directly communicate the desired outcome, whereas constraints might leave the model guessing about what is allowed. It gives flexibility and encourages creativity within the defined boundaries, while constraints can limit the model’s potential. Also a list of constraints can clash with each other.
+
+Constraints are still valuable but in certain situations. To prevent the model from generating harmful or biased content or when a strict output format or style is needed.
+
+If possible, use positive instructions: instead of telling the model what not to do, tell it what to do instead. This can avoid confusion and improve the accuracy of the output.
+
+DO:
+
+Generate a 1 paragraph blog post about the top 5 video game consoles. Only discuss the console, the company who made it, the year, and total sales.
+
+DO NOT:
+
+Generate a 1 paragraph blog post about the top 5 video game consoles. Do not list video game names.
+
+As a best practice, start by prioritizing instructions, clearly stating what you want the model to do and only use constraints when necessary for safety, clarity or specific requirements. Experiment and iterate to test different combinations of instructions and constraints to find what works best for your specific tasks, and document these.
+
+# Control the max token length
+
+To control the length of a generated LLM response, you can either set a max token limit in the configuration or explicitly request a specific length in your prompt. For example:
+
+"Explain quantum physics in a tweet length message."
+
+# Use variables in prompts
+
+To reuse prompts and make it more dynamic use variables in the prompt, which can be changed for different inputs. E.g. as shown in Table 20, a prompt which gives facts about a city. Instead of hardcoding the city name in the prompt, use a variable. Variables can save you time and effort by allowing you to avoid repeating yourself. If you need to use the same piece of information in multiple prompts, you can store it in a variable and then reference that variable in each prompt. This makes a lot of sense when integrating prompts into your own applications.
+
 <table>
-  <thead>
-    <tr>
-        <th>Draft an email confirming that I will be at the board meeting. Ask i...</th>
-        <th>X</th>
-    </tr>
-  </thead>
   <tbody>
     <tr>
-        <td>Hello,<br/><br/>I am writing to confirm my attendance at the upcoming board meeting.<br/><br/>I would like to request a minor adjustment to the agenda. I would appreciate it if we could allocate 15 minutes to discuss a few urgent matters.<br/><br/>Thank you for your consideration.<br/><br/>Best regards,<br/>[Your name]</td>
-        <td rowspan="3"></td>
+        <td>Prompt</td>
+        <td>VARIABLES<br/>{city} = Amsterdam<br/><br/>PROMPT<br/>You are a travel guide. Tell me a fact about the city: {city}</td>
     </tr>
     <tr>
-        <td>Rate this suggestion: [Thumbs Up] [Thumbs Down] [Feedback Icon]</td>
-    </tr>
-    <tr>
-        <td>This is a creative writing aid, and is not intended to be factual. Learn more</td>
+        <td>Output</td>
+        <td>Amsterdam is a beautiful city full of canals, bridges, and narrow streets. It’s a great place to visit for its rich history, culture, and nightlife.</td>
     </tr>
   </tbody>
 </table>
 
-You read the email and select **Insert**. Before sending it, you make a light edit to thank the team for keeping you on track while traveling.
+Table 20. Using variables in prompts
 
-# Example use cases
+# Experiment with input formats and writing styles
 
-## Chief Executive Officer
-### **NEW** Use case: Enhance personal productivity and time management
+Different models, model configurations, prompt formats, word choices, and submits can yield different results. Therefore, it’s important to experiment with prompt attributes like the style, the word choice, and the type prompt (zero shot, few shot, system prompt).
 
-You have important email threads that have numerous responses. You need to quickly catch up. You open the message in Gmail and read the automatically generated summary from Gemini in the Gmail side panel. To respond, you prompt Gemini in the Gmail side panel and tag relevant files by typing @file name. You type:
+For example a prompt with the goal to generate text about the revolutionary video game console Sega Dreamcast, can be formulated as a **question**, a **statement** or an **instruction**, resulting in different outputs:
 
-> Generate a response to [person] about [topic]. Include details on [deliverable] and [timeline] using @[Project A Status Report]. (Gemini in Gmail)
+* **Question:** What was the Sega Dreamcast and why was it such a revolutionary console?
+* **Statement:** The Sega Dreamcast was a sixth-generation video game console released by Sega in 1999. It...
+* **Instruction:** Write a single paragraph that describes the Sega Dreamcast console and explains why it was so revolutionary.
 
-### **NEW** Use case: Create outlines of presentations in seconds
+# For few-shot prompting with classification tasks, mix up the classes
 
-Your team will pull together a presentation for you, and you want to provide an outline to get them started. You want to generate an outline using Gemini Advanced. You select the microphone icon and use your voice to prompt. You say:
+Generally speaking, the order of your few-shots examples should not matter much. However, when doing classification tasks, make sure you mix up the possible response classes in the few shot examples. This is because you might otherwise be overfitting to the specific order of the examples. By mixing up the possible response classes, you can ensure that the model is learning to identify the key features of each class, rather than simply memorizing the order of the examples. This will lead to more robust and generalizable performance on unseen data.
 
-> I’m the CEO giving a presentation to [audience] at [event], and I want to create a detailed outline for my team to get started. I want to include a few important topics, including [areas of focus] and how our company is innovating with [company initiatives]. I’m envisioning time for a customer Q&A to end the presentation. Include suggested questions we could ask of a customer from the [industry] industry about how they are using our [product] to achieve [business outcome]. (Gemini Advanced)
+A good rule of thumb is to start with 6 few shot examples and start testing the accuracy from there.
 
-## Chief Operating Officer
-### Use case: Prepare challenging employee communications
+## Adapt to model updates
 
-You’re hosting a quarterly town hall meeting with the entire company. You want to write uplifting remarks to open the meeting. You open a new Doc and prompt Gemini in the Docs side panel. You type:
+It’s important for you to stay on top of model architecture changes, added data, and capabilities. Try out newer model versions and adjust your prompts to better leverage new model features. Tools like Vertex AI Studio are great to store, test, and document the various versions of your prompt.
 
-> Write two uplifting paragraphs for employees who have just finished a challenging quarter. Acknowledge [difficulties] and emphasize [positives] for the upcoming quarter. Use a tone that is motivating, optimistic, and fosters a sense of unity and collaboration. (Gemini in Docs)
+## Experiment with output formats
 
-You want to brainstorm and practice how you will respond empathetically to potentially tough questions. You go to Gemini Advanced and type:
+Besides the prompt input format, consider experimenting with the output format. For non-creative tasks like extracting, selecting, parsing, ordering, ranking, or categorizing data try having your output returned in a structured format like JSON or XML.
 
-> I’m the COO of a mid-sized company. I am hosting a quarterly town hall meeting with the entire company. I want to brainstorm and practice how I will respond to potentially tough questions. Help me write challenging questions that employees may ask at the upcoming town hall about [URL of company announcement]. Generate potential answers for each question that use a confident but firm tone. The responses should acknowledge the concern and let the employees know that we are striving to do our best for the entire company. (Gemini Advanced) ✦
+There are some benefits in returning JSON objects from a prompt that extracts data. In a real-world application I don’t need to manually create this JSON format, I can already return the data in a sorted order (very handy when working with datetime objects), but most importantly, by prompting for a JSON format it forces the model to create a structure and limit hallucinations.
 
-## Use case: Streamline responses on the go
+In summary, benefits of using JSON for your output:
 
-Your plans have changed, and you can’t attend a meeting. You need to provide the team with answers on a few key items. You open Gmail and use a voice command to prompt Gemini in Gmail. You say:
+* Returns always in the same style
+* Focus on the data you want to receive
 
-> Draft an email to [project lead] letting them know I will not be in the meeting due to an urgent matter. Ask them to take detailed notes and to ensure the team arrives at a decision on [key topic] in addition to assigning ownership of the postmortem report to [colleague]. (Gemini in Gmail) [Gmail icon]
+* Less chance for hallucinations
+* Make it relationship aware
+* You get data types
+* You can sort it
 
-## Chief Marketing Officer
-### **NEW** Use case: Perform market research and campaign planning
+Table 4 in the few-shot prompting section shows an example on how to return structured output.
 
-You’re starting annual planning. You want to conduct research on your target audience. You chat with Gemini Advanced. You type:
+## JSON Repair
 
-> I’m a marketing leader conducting analysis in preparation for next year’s [launch]. Define my target audiences [audiences], for my new line of [product]. Include interests, relevant marketing channels, and top trends that drive their consideration and purchase behavior. (Gemini Advanced) ✦
+While returning data in JSON format offers numerous advantages, it's not without its drawbacks. The structured nature of JSON, while beneficial for parsing and use in applications, requires significantly more tokens than plain text, leading to increased processing time and higher costs. Furthermore, JSON's verbosity can easily consume the entire output window, becoming especially problematic when the generation is abruptly cut off due to token limits. This truncation often results in invalid JSON, missing crucial closing braces or brackets, rendering the output unusable. Fortunately, tools like the `json-repair` library (available on PyPI) can be invaluable in these situations. This library intelligently attempts to automatically fix incomplete or malformed JSON objects, making it a crucial ally when working with LLM-generated JSON, especially when dealing with potential truncation issues.
 
-Next, you export your findings to a Doc by selecting **Share & export** and **Export to Docs**. Now, you want to pull in relevant data from your own files by typing **@file name**. You prompt Gemini in the Docs side panel. You type:
+# Working with Schemas
 
-> Brainstorm value props for my [target audiences] based on features from @[Product Requirements Document]. Include a section on campaign learnings from @[Campaign Performance]. (Gemini in Docs) [Google Docs icon]
+Using structured JSON as an output is a great solution, as we've seen multiple times in this paper. But what about *input*? While JSON is excellent for structuring the *output* the LLM generates, it can also be incredibly useful for structuring the *input* you provide. This is where JSON Schemas come into play. A JSON Schema defines the expected structure and data types of your JSON input. By providing a schema, you give the LLM a clear blueprint of the data it should expect, helping it focus its *attention* on the relevant information and reducing the risk of misinterpreting the input. Furthermore, schemas can help establish relationships between different pieces of data and even make the LLM "time-aware" by including date or timestamp fields with specific formats.
 
-## Use case: Brainstorm content and thought leadership
+Here's a simple example:
 
-You finished a meeting with your social media team leads. You took notes in a Doc about what resonates with your audience, trending topics, target audience data, and keywords that are effective in driving engagement with your brand. You want to brainstorm potential thought leadership pieces using these insights. You prompt Gemini in the Docs side panel. You type:
+Let's say you want to use an LLM to generate descriptions for products in an e-commerce catalog. Instead of just providing a free-form text description of the product, you can use a JSON schema to define the product's attributes:
 
-> Generate a list of four relevant and engaging thought leadership blog post ideas for [company] based on trending topics, target audience analysis, and brand keywords. (Gemini in Docs)
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "description": "Product name" },
+    "category": { "type": "string", "description": "Product category" },
+    "price": { "type": "number", "format": "float", "description": "Product price" },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Key features of the product"
+    },
+    "release_date": { "type": "string", "format": "date", "description": "Date the product was released"}
+  },
+},
+```
 
-During the same conversation, the team discussed launching a new brand campaign. You know that your customers value your reliable and unique services, and your company has a long history of delivering for customers. You need help getting started with ideas on a new campaign tagline. You open a new Google Doc and select **Help me write**. You type:
+Snippet 5. Definition of the structured output schema
 
-> Generate three options for a new slogan emphasizing reliability, innovation, and a long history of popularity for [company]. (Gemini in Docs)
+Then, you can provide the actual product data as a JSON object that conforms to this schema:
 
-The slogans help you get started with the creative process. You have upcoming events that could be the perfect place to test elements of a new campaign. You want to mock up ideas for booth graphics for your events team. You open a new presentation in Google Slides and select **Create image with Gemini**. You type:
+```json
+{
+  "name": "Wireless Headphones",
+  "category": "Electronics",
+  "price": 99.99,
+  "features": ["Noise cancellation", "Bluetooth 5.0", "20-hour battery life"],
+  "release_date": "2023-10-27"
+}
+```
 
-> Create an image of a trade show booth using orange and blue colors. The booth should be modern and showcase interactive computer stations. (Gemini in Slides)
+Snippet 6. Structured output from the LLM
 
-## Use case: Conduct competitive analysis
+By preprocessing your data and instead of providing full documents only providing both the schema and the data, you give the LLM a clear understanding of the product's attributes, including its release date, making it much more likely to generate an accurate and relevant description. This structured input approach, guiding the LLM's attention to the relevant fields, is especially valuable when working with large volumes of data or when integrating LLMs into complex applications.
 
-Your team is considering expanding into a new line of business. To research, you go to Gemini Advanced, and you type:
+## Experiment together with other prompt engineers
 
-> I am a CMO conducting a competitive analysis. My company is considering expanding into [a new line of business]. Generate a list of the top five competitors in the [industry] industry and include their pricing, strengths, weaknesses, and target audience. (Gemini Advanced)
+If you are in a situation where you have to try to come up with a good prompt, you might want to find multiple people to make an attempt. When everyone follows the best practices (as listed in this chapter) you are going to see a variance in performance between all the different prompt attempts.
 
-After going deeper in your research, you decide to create a five-year strategy to see what this could look like for the company. You type:
+## CoT Best practices
 
-> Okay, I am going to try to convince my CEO that we should expand into [line of business]. Draft a concise, competitive strategy outline for the next five years for the [industry] industry across North America markets with potential goals, strategies, and tactics. (Gemini Advanced)
+For CoT prompting, putting the answer after the reasoning is required because the generation of the reasoning changes the tokens that the model gets when it predicts the final answer.
 
-After iterating to generate an appropriate outline, you fill in additional details and thoughts to make the document your own.
+With CoT and self-consistency you need to be able to extract the final answer from your prompt, separated from the reasoning.
 
-## Chief Technology Officer
-### Use case: Summarize emerging technology trends
+For CoT prompting, set the temperature to 0.
 
-You need to catch up on emerging technology trends as the landscape is shifting quickly. You open Gemini Advanced, and you type:
+Chain of thought prompting is based on greedy decoding, predicting the next word in a sequence based on the highest probability assigned by the language model. Generally speaking, when using reasoning, to come up with the final answer, there’s likely one single correct answer. Therefore the temperature should always set to 0.
 
-> I am the CTO of [company] in [industry]. I want to understand emerging technology trends. Summarize the top five emerging technologies with the most significant potential impact on [industry]. For each technology, list its potential benefits and challenges, and suggest how it could impact [company] in the next two to three years. (Gemini Advanced) ✦
+## Document the various prompt attempts
 
-You want to dig deeper on specific topics, so you continue the conversation by typing:
+The last tip was mentioned before in this chapter, but we can’t stress enough how important it is: document your prompt attempts in full detail so you can learn over time what went well and what did not.
 
-> Recommend three areas where [my company] can take proactive steps to stay ahead of the curve on [specific areas]. (Gemini Advanced) ✦
+Prompt outputs can differ across models, across sampling settings, and even across different versions of the same model. Moreover, even across identical prompts to the same model, small differences in output sentence formatting and word choice can occur. (For example, as mentioned previously, if two tokens have the same predicted probability, ties may be broken randomly. This can then impact subsequent predicted tokens.).
 
-## Chief Information Officer
-### NEW Use case: Communicate technical topics to non-technical audiences
+We recommend creating a Google Sheet with Table 21 as a template. The advantages of this approach are that you have a complete record when you inevitably have to revisit your prompting work—either to pick it up in the future (you’d be surprised how much you can forget after just a short break), to test prompt performance on different versions of a model, and to help debug future errors.
 
-You’re making the case to digitally transform your company by adopting generative AI solutions. You need to present to the CEO and other leadership. You want help in communicating technical topics to non-technical audiences. You chat with Gemini Advanced. You type:
+Beyond the fields in this table, it’s also helpful to track the version of the prompt (iteration), a field to capture if the result was OK/NOT OK/SOMETIMES OK, and a field to capture feedback. If you’re lucky enough to be using Vertex AI Studio, save your prompts (using the same name and version as listed in your documentation) and track the hyperlink to the saved prompt in the table. This way, you’re always one click away from re-running your prompts.
 
-> I am the CIO at [company], and I am trying to build the case to [adopt generative AI solutions]. I need to explain the technical concept of generative AI to a non-technical audience (the CEO and board). Help me write talking points that will help me convey what generative AI is, ways it could help us digitally transform, and why it’s important to our growth as a company. Include details about how it could potentially refocus our technical talent on more strategic work, help enhance our workforce’s productivity, and help us better serve our global workforce and customers. (Gemini Advanced) ✦
+When working on a *retrieval augmented generation* system, you should also capture the specific aspects of the RAG system that impact what content was inserted into the prompt, including the query, chunk settings, chunk output, and other information.
 
-Gemini provides suggested ways to discuss the topic. You continue your brainstorm and then export your conversation by clicking **Share & export** and **Export to Docs**. Then, to build a presentation, you open a new Google Slide and prompt Gemini in the Slides side panel and tag relevant files by typing @file name. You type:
+Once you feel the prompt is close to perfect, take it to your project codebase. And in the codebase, save prompts in a separate file from code, so it’s easier to maintain. Finally, ideally your prompts are part of an operationalized system, and as a prompt engineer you should rely on automated tests and evaluation procedures to understand how well your prompt generalizes to a task.
 
-> I need to build a presentation to explain a technical topic to a non-technical audience. Generate an [introduction slide] that [describes what generative AI is] using @[Gen AI Explanation Notes]. (Gemini in Slides) ⧉
+Prompt engineering is an iterative process. Craft and test different prompts, analyze, and document the results. Refine your prompt based on the model’s performance. Keep experimenting until you achieve the desired output. When you change a model or model configuration, go back and keep experimenting with the previously used prompts.
 
-You continue to use the same prompt, adjusting the topic to generate more slides for your presentation based on your notes.
-
-## `NEW` Use case: Research vendor products, services, and features
-
-You’re working on a report to make a vendor recommendation. You visit Gemini Advanced and type:
-
-> I am the CIO at [company]. We are currently evaluating vendor options to [replatform our intranet]. Right now, we use [vendor], but we are looking to switch because [we are unhappy with limited functionality and account support]. Suggest additional vendor options to consider and include descriptions of their product and services and key features. (Gemini Advanced) ✦
-
-## Use case: Develop technical summaries
-
-Your team just provided a lengthy technical report. You need to summarize it for your CEO. You open the Google Doc with the full report, and you prompt Gemini in the Docs side panel. You type:
-
-> Summarize the key findings and implications of this report for [audience]. Focus on the main [vulnerabilities] identified and the recommended actions to address them. Use a formal tone. (Gemini in Docs) 📄
-
-You make light edits to the summary and include it as an executive summary.
-
-## Use case: Track IT assets
-
-Your company needs a quick way to track software access for new hires. You open a new Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Create a tracker of software licenses for employees and include columns for license types, usage rights, and renewal dates. (Gemini in Sheets) 📊
-
-# Chief Human Resources Officer
-## Use case: Demonstrate employee appreciation
-
-You want to set up a new program to help everyone feel included, appreciated, and acknowledged across the organization. To brainstorm, you open a new Google Doc and prompt Gemini in the Docs side panel. You type:
-
-> Brainstorm 10 employee appreciation ideas based on diverse employee interests such as cooking, gardening, sports, reading, and traveling. (Gemini in Docs) 📄
-
-Gemini in Docs kick-starts your creativity, and now you have ideas for employee interest clubs and events. You also want to ensure your leadership team is regularly encouraging managers to recognize talent on their teams, so you create email templates they can use as inspiration. You prompt Gemini in Docs by selecting **Help me write**, and you type:
-
-> Draft an email template that thanks [employee] for their hard work and [recent accomplishments]. Offer them an extra perk for their dedication, such as [a coffee gift card]. Use an upbeat and professional tone. (Gemini in Docs)
-
-## Use case: Assess employee satisfaction
-
-You want to draft an anonymous survey that allows people to openly and honestly assess how they are feeling. To draft questions, you open a new Google Doc and prompt Gemini in the Docs side panel. You type:
-
-> Draft an anonymous employee satisfaction survey with questions and answer options that touch upon key areas like workload, work-life balance, compensation, and career growth opportunities. Ensure the questions are clear, concise, and avoid leading answers. (Gemini in Docs)
-
-You received feedback from 15 senior leaders, and you've gathered all of the anonymous results in a Doc. You want to create a summary that you can use in your next call. You prompt Gemini in the Docs side panel. You type:
-
-> Summarize the results of the employee feedback to identify key themes. (Gemini in Docs)
-
-# Frontline management
-
-An image shows two men working in a warehouse or shipping area. One man in the foreground is looking at a laptop on a wooden desk, while another man in the background is standing near shelves filled with boxes.
-
-As a frontline worker manager, your team’s work is indispensable to your organization — your team may not primarily complete its day’s work on a computer, but communication and collaboration remains key.
-
-This section provides you with simple ways to integrate prompts in your daily tasks.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### **NEW** Use case: Find accurate information quickly
-
-A customer just approached you with a question about an ongoing sale. You could use help navigating the numerous files you have access to so that you find the right information quickly. You prompt Gemini in the Drive side panel. You type:
-
-> Find the document that details the [company name]’s [holiday] sale details. (Gemini in Drive)
-
-* Persona
-* Task
-* Context
-* Format
-
-Gemini in Drive
-
-> **Gemini**
->
-> **Hello, Sara**
-> How can I help you today?
->
-> *   Learn about a file in my Drive
-> *   Summarize a topic based on files in my Drive
-> *   Ask a question about a file in my Drive
->
-> More suggestions >
->
-> **Find the document that details the [company name]'s [holiday] sale details.**
->
-> Gemini for Workspace can make mistakes, including about people, so double-check it. Learn more
-
-Gemini in Drive returns suggested relevant files. From the side panel, you can directly summarize the files or you can click into a specific document. You open a suggested Doc to help answer the question. You prompt Gemini in the Docs side panel. You type:
-
-How much can customers save on [product type] during this sale? (Gemini in Docs)
-
-Gemini in Docs
-
-> **Gemini**
->
-> **How much can customers save on [product type] during this sale?**
->
-> Here's a breakdown of how much customers can save on each product type during the Holiday Savings Event:
-> *   **Clothing, Shoes, & Accessories:** Up to 50% off
-> *   **Home Goods & Decor:** Up to 40% off
-> *   **Electronics:** Up to 30% off
-> *   **Toys:** Up to 25% off
-> *   **Food & Beverage:** Up to 15% off
-> *   **Health & Beauty:** Up to 20% off
->
-> ⌄ Sources (1)
->
-> ✦ **What are the dates of the Holiday Savings Event?**
->
-> Show more suggestions
->
-> Enter a prompt here
->
-> Gemini for Workspace can make mistakes, including about people, so double-check it. Learn more
-
-Gemini returns a response, which helps you answer your customer's question in a timely manner.
-
-# Example use cases
-
-## Retail associate
-**NEW** **Use case: Improve team collaboration by finding and sharing information easily**
-
-Your store recently updated its return and exchange policies. To find the information, you prompt Gemini in the Drive side panel. You type:
-
-> Find the document that discusses our new return and exchange policies. (Gemini in Drive)
-
-Gemini returns suggested files that are related to the new policies. You directly click into the relevant file. Now, you want to send an email summarizing the document for your colleagues’ future reference. You open your email and prompt Gemini in the Gmail side panel. You type:
-
-> Write an email to my new colleagues summarizing @[Updated Return and Exchange Policy H2 2024]. (Gemini in Gmail)
-
-You select **Insert** and further personalize the message before sending it.
-
-**NEW** **Use case: Streamline task management**
-
-You have a list of opening and closing duties that you must perform depending on what shift you are working. You want to keep yourself organized, so you create a tracker using the duties listed in your onboarding Doc. You open a new Google Sheet and prompt Gemini in the Sheets side panel and tag relevant files by typing @file name. You type:
-
-> I am a retail manager and I need to create a checklist for my opening and closing duties. Create a template with columns for [opening and closing duties] from @[Onboarding New Hire Information]. (Gemini in Sheets)
-
-Gemini creates a spreadsheet. As you go through your day, you mark different tasks as complete. You have to leave your shift early, but you first need to communicate to the rest of the team what still needs to be done. You open your Gmail and prompt Gemini in the Gmail side panel and tag the spreadsheet you just created. You type:
-
-> Write an email to the team telling them what still needs to be done from the AM shift from @[Opening and Closing Duties Tracker]. (Gemini in Gmail)
-
-# Warehouse worker
-## **NEW** Use case: Manage inventory
-
-A customer wants to place a bulk order. You need to check the store's inventory to see if you have enough to fulfill it. You open your inventory spreadsheet that tracks this information and prompt Gemini in the Sheets side panel. You type:
-
-> How many [units] of [product] do we have left in our inventory? (Gemini in Sheets)
-
-## **NEW** Use case: Manage audits
-
-Your warehouse is undergoing an inventory audit, and you're in charge of verifying any numbers that are misaligned between your inventory tracker product total and what was counted during the audit. You prompt Gemini in the Sheets side panel. You type:
-
-> Create a formula that helps me calculate the difference between two columns. Which items have a discrepancy in [the total number counted] versus [the quantity on hand]? (Gemini in Sheets)
-
-You verify Gemini's response that there are only a few items whose count did not align to your inventory tracker's total. You need to write a message to your supervisor telling them that you're looking into the issue. You open your Gmail and prompt Gemini in the Gmail side panel. You type:
-
-> I'm a warehouse worker managing an audit. Write a message to my supervisor to let them know that I am looking into the products whose counts are incorrect. (Gemini in Gmail)
-
-The drafted email looks good to go, so you hit send after reviewing.
-
-# Human resources
-
-As an HR professional, you’re the backbone of your organization, and you deal with a large volume of confidential and sensitive information. You shape company culture, find and nurture talent, and ensure a positive employee experience. These are no small feats.
-
-This section provides you with simple ways to integrate prompts in your day-to-day tasks.
-
-A smiling woman sits at a desk in a bright, modern office space with framed pictures on the wall behind her.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Welcome new employees
-
-You’re an HR manager working on a presentation script. You have a Google Doc full of notes, bullet points, and topics that you would like to cover. You begin by opening your Google Doc with notes, and you prompt Gemini in Docs.
-
-> I am an HR manager, and I am developing a script for my presentation for new hires. I need to create the script for an onboarding presentation about our company’s commitment to employee development and well-being. Help me draft talking points that showcase why employee mentorship and development are core values for our company using @[Mission Statement and Core Values]. (Gemini in Docs)
-
-*   Persona
-*   Task
-*   Context
-*   Format
-
-Gemini in Docs: [Drafts talking points]
-
-The page features two screenshots illustrating the use of Gemini in Google Docs for drafting an onboarding presentation script.
-
-**Gemini Interface - Initial Prompt and Response**
-
-**Left Screenshot (User Prompt):**
-* **Header:** Gemini
-* **Greeting:** Hello, Manuel. How can I help you today?
-* **Suggestions:**
-    * Brainstorm for a new product
-    * Create an outline for a pitch
-    * Write a blog post about an upcoming launch
-    * More suggestions >
-* **User Input:** I am an HR manager, and I am developing a script for my presentation for new hires. I need to create the script for an onboarding presentation about our company's commitment to employee development and well-being. Help me draft talking points that showcase why employee mentorship and development are core values for our company using [file icon] Company Mission Statement and Core Values
-* **Footer:** Gemini for Workspace can make mistakes, including about people, so double-check it. Learn more
-
-**Right Screenshot (Gemini Response):**
-* **Gemini Response:** Absolutely! Here's a script focused on employee development and well-being, drawing from the company's core values:
-    * **Welcome and Introduction**
-        * Welcome new hires and express excitement about their journey with the company.
-        * Briefly introduce the company's mission: To deliver exceptional customer experiences, offering curated products that enhance everyday life and inspire joy.
-    * **Core Value: Employee Empowerment**
-        * **Our Belief:** We believe that our employees are the heart of our company. Your growth and well-being directly impact our ability to deliver exceptional customer experiences.
-        * **Mentorship Programs:** Highlight any formal mentorship programs, emphasizing how they connect employees with experienced colleagues for guidance and support.
-        * **Development Opportunities:** Discuss workshops, training sessions, and resources available for skill development. Mention any tuition reimbursement or certification support programs.
-        * **Open Door Policy:** Assure new hires that managers and leaders are approachable for career conversations and development planning.
-* **Follow-up Suggestion:** Can you provide an example of an effective mentorship program at our company?
-* **Button:** Show more suggestions
-* **Input Field:** Enter a prompt here
-* **Footer:** Gemini for Workspace can make mistakes, including about people, so double-check it. Learn more
-
----
-
-You select **Insert**. Now, you want to add more targeted talking points. You type:
-
-> Add four talking points for a new section of the presentation script that explains how we support our employees' development. Mention our training and certification programs and mentorship opportunities using @[Learning and Development Paths], and write a strong closing statement about our expectation that everyone contributes to a respectful and welcoming workplace. Use a professional tone.
-> (Gemini in Docs)
-
-Gemini in Docs: [Adds talking points]
-
-You add in more details and then you’re ready to create a draft of the Google Slides that will accompany your talking points.
-
-# Example use cases
-
-## Recruiter
-**NEW** Use case: Report on recruitment metrics
-
-The business is growing, and you have a large hiring effort underway. You want to see a holistic view of how your hiring efforts are going. You open your Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Help me create a formula to calculate the total total number of [hires] by [department].
-> (Gemini in Sheets)
-
-You continue your conversation by prompting additional questions. You type:
-
-> In what month did we hire the most people? (Gemini in Sheets)
-
-You continue with your line of questions until you feel ready to write your report.
-
-## Use case: Manage the recruiting process
-
-You want to brainstorm potential ways the company can better manage the recruiting process. You open the team’s Google Doc with recruiting strategies. You prompt Gemini in the Docs side panel. You type:
-
-> Create a list of strategies our recruiters can use to improve our existing recruiting process and identify potential job candidates. (Gemini in Docs)
-
-After creating a short recommendation for leadership on how the team will improve existing recruiting processes, the team receives guidance for a job opening for a content marketing manager. You open a new Doc and prompt Gemini in Docs. You type:
-
-> I am opening a new job position on the marketing team. Write a compelling role description for a content marketing manager. Highlight key responsibilities [insert] and requirements, including B2B and B2C content creation, a minimum of five years experience, and a portfolio of writing examples. (Gemini in Docs)
-
-## Use case: Manage the interview process
-
-You want to prepare questions for phone screen interviews. You decide to prepare by using Gemini Advanced. You upload the relevant file and type:
-
-> I am a recruiter, and I am preparing for candidate interviews. Using the job description in the file I’m uploading, write a list of 20 open-ended interview questions that I can use to screen candidates. (Gemini Advanced)
-
-## Use case: Communicate with candidates
-
-The team has made its hiring decisions. You open the Google Doc with notes on each candidate. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> I am writing an email to a job candidate who just finished the interview process. Create a template for an offer letter for the [selected candidate] for the [position] with a request to schedule a call to discuss benefits, compensation, and start date. (Gemini in Docs)
-
-Now, you want to generate personalized, empathetic email copy to send to the job candidates who will not receive an offer. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> I am writing an email to job candidates who finished the interview process, but who were not selected. Help me write a rejection letter for [candidate] for the [position]. Use an empathetic tone. (Gemini in Docs)
-
-# HR Manager
-## **NEW** Use case: Conduct employee engagement and satisfaction surveys
-
-You are in charge of building a survey that will go out to all employees. You want to brainstorm ideas on questions to ask. You visit Gemini Advanced and type:
-
-> I am an HR manager in charge of running our enterprise-wide survey at [company] to gauge employee engagement and satisfaction. Generate a list of questions I can use to build the survey. (Gemini Advanced)
-
-Your company has completed its annual employee engagement and satisfaction survey. Now, you want to clean up the data before you analyze it. You go to Gemini Advanced, upload the relevant file, and type:
-
-> Help me clean my employee survey spreadsheet. Specifically, fill any blank values in the name column with “Anonymous,” and if the region column shows Headquarters, replace that with HQ. Finally, remove any rows where the satisfaction column is blank. Please generate a new file for me with my cleaned data. (Gemini Advanced)
-
-## **NEW** Use case: Create individualized learning and development plans
-
-You have all of your company’s learning resources stored in your Google Drive. For each new hire, you want to create a tailored learning and development plan. To do this, you prompt Gemini in the Drive side panel. You type:
-
-> Create a personalized learning and development plan for a new hire who needs to learn about [topic]. Organize it by day and suggest relevant files. (Gemini in Drive)
-
-## Use case: Onboard employees
-
-The recruiters have just filled the company’s two open roles. Now, you’re in charge of ensuring the candidates have a smooth onboarding experience. You need help in structuring information for the new hires, so you open a Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Create a table that outlines a new employee’s first-week schedule, including key meetings, training sessions, and introductions. Provide a column for key contacts and priority level (low, medium, high) for each activity. (Gemini in Sheets)
-
-Gemini in Sheets returns a formatted Google Sheet that you can now fill in with key contacts, meetings, and activities. The conditional formatting makes it easy for you to sort tasks by priority level with color-coded visual cues. Next, you need to create ways for the team to bond. You open a new Google Doc and prompt Gemini in the Docs side panel. You type:
-
-> Design a team-bonding activity, such as an office scavenger hunt, to have team members work together during their team meeting. (Gemini in Docs)
-
-Gemini in Docs provides suggestions that help you brainstorm about the scavenger hunt. You tweak the outputs and get the idea approved by the team lead. Now, you need to communicate with the new hires about their first day when they will meet the team. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Draft an email to the new employees on the [team] to meet the rest of their team and explain the team-building purposes of the meeting. (Gemini in Gmail)
-
-## Use case: Communicate key findings and draft follow-up surveys
-
-Now that you’ve finished onboarding new employees, you need to focus on ensuring that the latest company research data is easily understood by leadership. You’re committed to creating a welcoming environment for all employees where they can develop their skills. You open the Google Doc with the finalized report. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Draft an email to senior leadership that summarizes the key findings from our [report]. Include a short introductory paragraph with bullet points on the most important findings. (Gemini in Docs)
-
-Gemini in Docs returns a summary with bullet points. You edit it and then use it to email the leadership team. As a follow-up action, you want to understand how changes made to company policies impact the employee experience. You open Gemini in Docs to begin drafting a survey. You select **Help me write** and type:
-
-> Draft an anonymous employee survey with questions and answer options to monitor company progress on [topics]. (Gemini in Docs)
-
-# Marketing
-
-As a marketing professional, you’re the creative force behind captivating campaigns, brand experiences, lead generation, and more. You understand the power of data-driven insights, compelling messaging, and connecting with your audience on a deeper level.
-
-This section provides you with simple ways to integrate prompts in your day-to-day tasks. For chief marketing officer (CMO) use cases, visit the Executives section of the guide.
-
-The image shows three marketing professionals—two women and a man—collaborating in a bright, modern office filled with green plants. They are gathered around a wooden table with a laptop and a notebook, appearing engaged and creative in their work.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Develop a visual identity
-
-You own your own consulting business and are often hired to function as a brand manager for your clients. You help businesses in a variety of industries. Your customer is getting ready to launch a coffee shop and video game cafe, and you need to kick-start the creative process by developing a visual identity. You want to ideate and provide early thoughts to the rest of the team. You decide to chat with Gemini Advanced. You type:
-
-> Generate ideas for a creative and eye-catching logo for my new business, a coffee shop combined with a video game cafe. Generate a logo considering the following:
->
-> Dual Concept: The logo needs to clearly signal both the coffee and gaming aspects of the business without being too cluttered.
->
-> Target Audience: Appeal to a wide range of gamers (casual and enthusiast), as well as coffee lovers seeking a unique hangout spot.
-
-Style Options: I’m open to these approaches — let’s get a few examples in each of these three styles to compare: Modern and Playful: Bold colors, fun graphics, maybe a pixel art aesthetic. Retro-Cool: Think classic arcade style — chunky lettering, neon color inspiration. Sleek and Minimalist: Clean lines, geometric shapes, a more subtle nod to both themes. (Gemini Advanced) ✦
-
-*   Persona
-*   Task
-*   Context
-*   Format
-
-> **Gemini Advanced**
->
-> **User:** Generate ideas for a creative and eye-catching logo for my new business, a coffee shop combined with a video game cafe. Generate a logo considering the following: Dual Concept: The logo needs to clearly signal both the coffee and gaming aspects of the business without being too cluttered. Target Audience: Appeal to a wide rang...
->
-> **Gemini:** Sure!
->
-> The response includes three logo designs:
-> - A coffee bean split vertically, with the left side being a realistic brown bean and the right side a pixelated version in shades of red, orange, and yellow.
-> - The words "GAME BREW" in a bold, retro, pixelated font with a neon pink and blue glitch effect.
-> - A minimalist icon of a coffee cup with steam, wearing headphones, with the text "COFFEE & GAMING" below it.
-
-You like the retro-cool options. You continue your conversation and you type:
-
-I like the retro-cool options. Can you provide three more in that same style? (Gemini Advanced) ✦
-
-> **Gemini Advanced**
->
-> **User:** I like the retro-cool options. Can you provide three more in that same style?
->
-> **Gemini:** Sure!
->
-> The response includes three additional retro-style logo designs:
-> - A square neon sign graphic with a glowing red and orange border, containing a pixelated blue coffee cup with white steam against a dark background with small yellow pixel stars.
-> - A large pixelated heart with a green border and red interior, with a brown coffee bean in the center.
-> - The words "LEVEL UP COFFEE" in a bold, retro, pixelated font with a neon pink and cyan glitch effect.
-
-Now that you have a sense of what the logo could look like, you want to brainstorm names. You type:
-
-Write a tagline and 10 potential names for the business to go with these logos. (Gemini Advanced) ✦
-
-> ✦ Gemini Advanced
->
-> Write a tagline and 10 potential names for the business to go with these logos.
->
-> ✦ Certainly! Here are 3 taglines and 10 potential names for a gaming coffee cafe to go with the retro-cool aesthetic of the logos:
->
-> **Taglines:**
-> 1. "Power Up Your Play. Fuel Your Fun."
-> 2. "Game On. Coffee Strong."
-> 3. "Where Pixels and Perks Collide."
->
-> **Potential Names:**
-> 1. "The Pixel Perk"
-> 2. "Cafe Arcade"
-> 3. "The Controller & Cup"
-> 4. "Joystick Java"
-
-# Example use cases
-
-## Brand Manager
-### **NEW** Use case: Develop brand strategy
-
-You are working to refresh your company’s brand architecture and messaging frameworks. To get started, you visit Gemini Advanced and type:
-
-> I am a brand manager at [company]. Help me define a clear and effective brand architecture for [company], considering its diverse products and service portfolio. For additional context, here is our current brand portfolio: [List all existing brands, products, and services]. Here is our company mission and vision: [Provide a brief overview of the company’s mission and vision]. And these are our target audience(s): [describe target audience(s)]. Our desired brand positioning is [explain how the company wants to be perceived in the market]. (Gemini Advanced) ✦
-
-### **NEW** Use case: Brainstorm brand partnerships
-
-You are working on a new brand campaign. You want to identify influencers or complementary brands you could partner with as part of the social amplification plan. You visit Gemini Advanced and type:
-
-> I am a [brand manager] at [company] working to launch a new campaign focused on [topic]. Identify potential types of influencers and complementary brands that [company] could partner with to amplify the [campaign] on social media channels. The goal is to reach a wide audience of [audiences], while building credibility and driving engagement. (Gemini Advanced) ✦
-
-## Use case: Conduct market research and identify trends
-
-The landscape in your industry is rapidly changing, and you need to conduct market research to better identify and understand emerging trends. You go to Gemini Advanced, and you type:
-
-> I need to do market research on [industry] industry to identify new trends. Use [URLs] to uncover emerging trends and shifting consumer preferences. (Gemini Advanced) ✦
-
-After completing your research, you and the team have new messaging that you want to A/B test. You want to generate multiple variations of ad copy using Gemini Advanced. You type:
-
-> I need to A/B test new messaging. Here is our messaging: [messaging]. Generate three different variations of ad copy. (Gemini Advanced) ✦
-
-## Use case: Create and manage content and distribution
-
-A customer has exciting organizational changes underway. You need to create content to shape the brand narrative of the company as it enters its next era. You open a Google Doc to get started on a blog draft. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Create a blog draft announcing that [name] is joining [company] as [position]. [Share two or three details from their bio, such as their previous position and company, their involvement in professional organizations, etc.]. (Gemini in Docs) 📄
-
-You also want a way to efficiently track how and where this content is amplified, so you open a Google Sheet. You prompt Gemini in the Sheets side panel. You type:
-
-> Create a project tracker for content amplification and include columns for channel, owner, URL, and priority level (low, medium, high). (Gemini in Sheets) ⊞
-
-# Marketing Specialist
-
-## **NEW** Use case: Improve collaboration with customers, agencies, and teams
-
-You are hosting a meeting discussing an upcoming project with multiple teams and an agency that will complete the project’s design work. You use Gemini in Google Meet and select **Take notes with Gemini** so that all participants can give their undivided attention to the conversation. After the meeting, Gemini provides a summary of the discussion and pulls out action items to keep the team on track. (Gemini in Meet) 📹
-
-From the generated Doc with call notes, you want to create a spreadsheet to help keep the team on track. You open a new Google Sheet and prompt Gemini in the Sheets side panel and tag relevant files by typing @file name. You type:
-
-> Generate a project tracker using the action items from @[Meeting Notes from Gemini]. (Gemini in Sheets) ⊞
-
-## **NEW** Use case: Analyze social media trends and other data to reduce time to market
-
-You want to analyze different data sources and collate findings to help you reduce your time to market. You open Gemini Advanced and type:
-
-> I am a [marketing specialist] at [company]. We are working on our [go to market] plans for [type of product]. Help me research social media trends around [topics]. Be specific about trending keywords, top influencer voices, and common themes in popular content. (Gemini Advanced) ✦
-
-You verify Gemini’s response by selecting the **Double-check response** option beneath Gemini’s response.
-
-Now, you want to review a report you’ve commissioned that surveyed customers from different industries. You continue your conversation with Gemini. You upload the relevant file and type:
-
-> Analyze the findings in this [report]. I am especially interested in any common themes about [topic] that stand out to you that will help me better position [marketing materials] for [product] for [target audience]. (Gemini Advanced) ✦
-
-## **NEW** Use case: Perform audience research and develop personas
-
-You need to refresh your audience research and persona development as the team updates webpage copy, pitch decks, and other marketing assets. You brainstorm and research using Gemini Advanced. You type:
-
-> I am a marketing specialist focused on [area] at [company]. I need to conduct in-depth audience research so that I can develop convincing marketing artifacts for [personas]. To start, help me generate a comprehensive profile of [target audience]. Include core demographics and psychographics, online platforms they frequent, key pain points [product] could solve, and language and messaging that resonates with them. (Gemini Advanced) ✦
-
-# Digital Marketing Manager
-## **NEW** Use case: Create and optimize copy for search engine marketing (SEM)
-
-You want to create a robust list of keywords and long-tail keywords and phrases to uncover new opportunities for SEM targeting. You go to Gemini Advanced and type:
-
-> I am a digital marketing manager at [company]. I am working on SEM ads for [product]. Here are my seed keywords: [list keywords]. Help me generate a list of additional keywords and long-tail keywords and phrases that can help me maximize ad performance. (Gemini Advanced) ✦
-
-After you finish brainstorming your keywords list, you want to generate a few variations of ad copy. You type:
-
-> For my SEM campaign, use these keywords as inspiration to generate multiple ad copy variations with different headlines, descriptions, and calls to action for [product]. Use a [tone] tone in the copy. (Gemini Advanced) ✦
-
-You want to further refine the text according to different audiences, so you type:
-
-> Do the same thing, except write new options for [audience], adjust the tone to be [tone] and focus the copy on highlighting [feature] of [product]. (Gemini Advanced) ✦
-
-## Use case: Draft customer acquisition communications
-
-Email is one of your company's main channels of direct communication with prospects and customers. You want help getting started with copy for a new email campaign. You open a new Google Doc, and you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Write three different email subject lines that reference [audience segments] and our [product]. Make them catchy but professional. (Gemini in Docs) 📄
-
-Now you want to share the proposed email subject lines with the copywriting team. You open Gmail, and you select **Help me write**. You type:
-
-> Write an email proposing [suggested email subject lines] to the copywriting team. Keep the email short and simple and request feedback by the end of week. Thank them for their help. (Gemini in Gmail) ✉️
-
-# Use case: Generate inbound marketing campaigns
-
-The team created a new ebook on best practices for executives using our new solution. You’re creating a landing page to house the gated asset, and you need engaging copy. You open a new Google Doc and select **Help me write**. You type:
-
-> Create compelling copy for a landing page promoting a new [ebook/webinar/free trial and details] designed for an executive target audience. Highlight key benefits and encourage conversions with persuasive calls to action. (Gemini in Docs)
-
-The webpage launched, and you’re now running an inbound marketing campaign. You need to nurture the leads that downloaded your latest ebook. You open a new Google Doc, and you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Generate copy for a sequence of five automated emails to nurture leads after they download the ebook on [topic]. Personalize emails and encourage further engagement [with other valuable resources or offers]. (Gemini in Docs)
-
-# Content Marketing Manager
-
-## **NEW** Use case: Deliver personalized content to customers at scale
-
-You want to create copy for a five-step email nurture cadence for your new product. You open a new Google Doc and prompt Gemini in the Docs side panel and tag relevant files by typing @file name. You type:
-
-> Create a 5-step nurture email cadence to [prospective customers] who have signed up for [our newsletter], with the goal of getting them to [purchase] [product] using @[Product Specific Notes] and @[Product FAQ]. (Gemini in Docs)
-
-## **NEW** Use case: Create visuals for ad campaigns
-
-You want to create visuals to help your creative agency better understand the team’s direction for an upcoming campaign. You open a new Google Slide and prompt Gemini in Slides. You type:
-
-> Help me create inspirational images for a marketing campaign for [type of product]. Images should use [colors] and [natural elements, such as clouds]. Use a [photorealistic] style. (Gemini in Slides)
-
-## Use case: Generate inspiration for your blog
-
-You work for a travel company as the content marketing manager for the company’s blog channel. You need to kick-start the brainstorming process for a new blog post. You decide to gather ideas by collaborating with Gemini Advanced. You type:
-
-> Suggest blog post topics that would be interesting for people passionate about travel and the tourism industry. Here’s what I want you to focus on: Make the topics unique. There are lots of tourism blogs out there — let’s come up with fresh angles that would stand out. Keep the topics relevant. Tap into current trends or recent challenges/innovations within the tourism industry when brainstorming. I’d like each topic to include:
->
-> Target audience: Who would this topic specifically appeal to?
->
-> Content outline: A few bullet points with the main ideas the blog post would discuss.
->
-> Call to action: Suggest one way to engage the reader at the end of the post. (Gemini Advanced) ✦
-
-You love the initial ideas you were able to create. You also need to focus on generating creative imagery to accompany the copy in the blog. You type:
-
-> Create an image of a plane flying above the clouds over mountains and rivers during sunrise that I can use in the marketing campaign to promote my travel company. (Gemini Advanced) ✦
-
-## Use case: Create social media posts
-
-You’re focused on creating content that is optimized for social media channels. You need to gather ideas for content targeted to distinct audiences. You open a new Google Doc and prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Write three engaging social media posts about [product/service/topic] that would appeal to [target audience]. Keep each social media post to two sentences and include a call to action to visit [our website]. (Gemini in Docs) 📄
-
-You also need to craft social media posts to drive registration for an upcoming event targeting recent grads. You open a new Google Doc and you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Create a social media post promoting our upcoming [event name]. Include attention-grabbing language and relevant hashtags for [audience]. (Gemini in Docs) 📄
-
-# Use case: Create a strategic marketing plan
-
-Your company is launching a new app. You need a robust marketing plan, but you want ideas to get started. You chat with Gemini Advanced. You type:
-
-> I’m developing a marketing plan for a new app that provides [functionality]. My target audience is [audience]. Help me create a plan with a focus on [marketing channels]. Here’s what I’d like you to cover: competitor analysis, ideal marketing channel mix with rationale, budget recommendations, key messaging ideas, and proposed campaign timeline with KPIs. (Gemini Advanced)
-
-The responses from your chat are helpful in shaping your marketing plan. You need to get the high-level details to your chief marketing officer (CMO). You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Draft an email to the CMO telling them that I will provide a one-pager with a strategic marketing plan for the new app launch project by [date], and it will include an executive summary, overview of the competitive landscape, top marketing channels, and the target demographic for all South American markets. (Gemini in Gmail)
-
-# Project management
-
-As the conductor of complex, ever-evolving projects, your mission is to navigate timelines, coordinate teams, and ensure your programs deliver the intended impact.
-
-A photograph shows four people in a business meeting at a table in a modern cafe or office setting, with a laptop and papers.
-
-This section provides you with simple ways to integrate prompts in your daily tasks.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Generate user acceptance tests
-
-Your team completed the registration form for a new website, and now you need to generate user acceptance tests (UATs). To start, you visit Gemini Advanced and type:
-
-Create a table with 10 user acceptance tests (UAT) for the website registration form. (Gemini Advanced) ✦
-
-*   Persona
-*   Task
-*   Context
-*   Format
-
-> ✦ Gemini Advanced
->
-> 👤 Create a table with 10 user acceptance tests (UAT) for the website registration form.
->
-> Show drafts ∨ 🔊
->
-> ✦ Absolutely, let's outline some key UAT scenarios for the website registration form:
->
-> <table>
-  <tbody>
-    <tr>
-        <td>&gt; [thead] Test ID</td>
-        <td>Test Case Description</td>
-        <td>Expected Result</td>
-    </tr>
-    <tr>
-        <td>&gt; UAT-01</td>
-        <td>Valid Registration: User enters all required fields correctly with a strong password.</td>
-        <td>Successful registration, user is redirected to a confirmation/welcome page or logged in.</td>
-    </tr>
-    <tr>
-        <td>&gt; UAT-02</td>
-        <td>Invalid Email: User enters an invalid email format (e.g., missing @ symbol).</td>
-        <td>Error message displayed near the email field, highlighting the incorrect format.</td>
-    </tr>
-    <tr>
-        <td>&gt;</td>
-        <td colspan="2"></td>
-    </tr>
-  </tbody>
-</table>
-
-You think the results are a helpful starting point, so you copy the results to a Google Sheet before drafting an email to your colleague who is running the UATs. You want to explain what they need to do. You continue your conversation with Gemini Advanced. You type:
-
-> Draft an email to [my colleague] who is running this UAT and explain what they need to do next. (Gemini Advanced) ✦
-
-Gemini Advanced
-
-> Draft an email to [my colleague] who is running this UAT and explain what they need to do next.
->
-> Show drafts ∨
->
-> Subject: User Acceptance Testing for [Website/Project Name] Registration Form
->
-> Hi [Colleague's Name]
->
-> I hope this email finds you well.
->
-> I've attached a table outlining the key User Acceptance Tests (UAT) we need to conduct for the registration form on [Website/Project Name]. Please review these test cases carefully.
->
-> **Next Steps:**
->
-> 1. Familiarize yourself with the test cases: Make sure you understand the expected behavior for each scenario.
-> 2. Set up your testing environment: Ensure you have access to the latest build of the website/application.
-> 3. Execute the tests: Carefully follow the steps outlined in the table and record your observations.
-> 4. Report any issues: If you encounter any unexpected behavior or bugs, please log them in our issue tracking system with detailed steps to reproduce.
-> 5. Provide feedback: Share your overall impressions of the form's usability and any suggestions for improvement.
-
-The drafted email provides a helpful starting point, so you export the results to Gmail, and you make edits directly before sending the message to your colleague.
-
-# Example use cases
-
-## Project Manager
-### Use case: Report on project status
-
-You just had a lengthy call with all of your project stakeholders, and now you want to summarize what was discussed and follow up with assigned action items. In the Google Doc with the meeting transcript, you prompt Gemini in Docs. You type:
-
-> Summarize this call transcript in a short paragraph. In bullet points, highlight the action items, decisions made, and owners for each item based off of [call transcript]. (Gemini in Docs) 📄
-
-You need to update your manager based on the activity from the last call. You want to templatize how your project status updates are delivered. You open a new Google Doc, and you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Draft a project status update email template to send to my manager. Include sections for a summary of key accomplishments this week, any challenges faced, and the top three priorities for next week. (Gemini in Docs)
-
-The team just hit its key milestones an entire week early. It’s been a challenging project, so you want to gather everyone to celebrate together. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Write an invitation for a team lunch to celebrate the progress made on a project and include [date, time, and location]. Thank them for all of their hard work and acknowledge that this has been a challenging project. (Gemini in Gmail)
-
-## Use case: Create a project retrospective
-
-You’ve just wrapped the project, and your senior leadership team needs a project retrospective. To kick-start the process of gathering feedback, you open a Google Doc and prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> I need to write a report detailing the successes, failures, and lessons learned from [project]. Draft a list of 20 questions to guide a cross-team process investigation. Include questions to uncover what worked, what didn’t, specific process breakdowns, technical issues, communication gaps, or any other potential contributing factors to the problem or success of the project. (Gemini in Docs)
-
-The questions give you a great starting place. You edit them before sharing with the team for their input. After you gather everyone’s feedback, you want help structuring the report. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Summarize this document in two paragraphs. Include high-level information about the project’s goals, the main contributors, the outcomes of the project, and any key successes or failures. (Gemini in Docs)
-
-## Use case: Develop an issue tracker and related communications
-
-You need to create a project issue tracker to keep track of risks and solve them in a timely manner. You want to create a template quickly, so you open a new Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Create a spreadsheet to track project issues, including descriptions, status, assigned owner, and action items for resolution. (Gemini in Sheets)
-
-Before the project fully kicks off, you want to have standardized communication templates at your disposal. For example, you want an email that can be used if an issue arises. You open a new Google Doc and prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Draft an email template to announce when an issue arises and include causes, solutions, and timelines to resolve it. (Gemini in Docs)
-
-You like the template that Gemini in Docs creates, and you want to create an additional, slightly different email template. In the same Google Doc, you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Draft an email template to a stakeholder to escalate a critical project issue, outlining the impact and proposed solution. (Gemini in Docs)
-
-# Technical Project Manager
-## [NEW] Use case: Create a workback schedule
-
-You are the technical project manager for a software release. You already have the scope of the project documented. Now, you want to get started on building a workstream tracker and workback schedule. You go to Gemini Advanced and type:
-
-> I am a [technical project manager] at [company] overseeing [project and brief project description]. The project has the following scope: [scope]. Our project goals are: [project goals]. Our project deliverables are: [project deliverables]. Our budget is [budget], and our delivery date is [delivery date]. Help me create a workback schedule to keep the team on track. Include dates for key milestones and demos. (Gemini Advanced)
-
-# Sales
-
-Understanding your customers inside and out is your ticket to success. You’re in charge of maintaining critical relationships, deciphering buying signals, crafting tailored solutions, driving revenue for the business, and more.
-
-This section provides you with simple ways to integrate prompts in your daily tasks.
-
-Two professional women are in a bright office setting, engaged in a collaborative discussion. One woman is seated and holding a notebook, while the other is standing and holding a tablet.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Google Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Conduct customer research
-
-You’re an account executive, and you’ve just been assigned to a new customer. You need a research assistant. You will need to get to know key contacts at the account to begin building trust between your teams, but first, you want to send an introductory email, so you open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Write an email to [name], the new [title] at [company]. Congratulate them on their new role. Introduce me as their contact point at [company name]. Invite them to lunch next week and check if they prefer Monday or Tuesday. (Gemini in Gmail)
-
-* Persona
-* Task
-* Context
-* Format
-
-Gemini in Gmail: [Drafts email]
-
-Gemini in Gmail
-
-> **Write an email to [name], the new [title] at [company]. Co...**
->
-> Hi [name],
->
-> Congratulations on your new role as [title] at [company]!
->
-> I'm [your name], your contact point at [company name]. I'm looking forward to working with you and helping you in any way I can.
->
-> I'd like to invite you to lunch next week to get to know each other better. Would Monday or Tuesday be better for you?
->
-> Best regards,
->
-> [Your name]
->
-> ↻ Recreate    ≂ Refine    [Insert]
-
-This provides a helpful starting point, but you want to try getting an even better response. You click **Refine** and **Formalize**.
-
-Gemini in Gmail: [Generates refined email suggestions]
-
-Gemini in Gmail
-
-> **Write an email to [name], the new [title] at [company]. Congratula...**
->
-> *   Formalize
-> *   Elaborate
-> *   Shorten
->
-> Hi [name],
->
-> Congratulations on your new role as [title] at [company]! I'm [your name], your contact point at [company name]. I'm excited to work with you and learn from your expertise.
->
-> I'd like to invite you to lunch next week to discuss our upcoming projects and get to know each other better. Please let me know if Monday or Tuesday works better for you.
->
-> Best regards,
-> [Your name]
->
-> Rate this suggestion: [thumbs up icon] [thumbs down icon] [feedback icon]
-> This is a creative writing aid, and is not intended to be factual. Learn more
-
-You're happy with the email, so you click **Insert**. You read the message one last time, make final light edits directly, and then send the message. Now, you want to learn more about the customer and how it markets itself. To research, you visit Gemini Advanced and type:
-
-I am an account executive in charge of a new account, [customer name]. I need to do initial research. What is the market strategy of [customer]? (Gemini Advanced) ✦
-
-> [User]: I am an account executive in charge of a new account, [customer name]. I need to do initial research. What is the market strategy of [customer]?
->
-> [Gemini]: Show drafts ∨ 🔊
->
-> Here's a breakdown of how to approach researching a new customer's market strategy:
->
-> **Key Steps:**
->
-> 1. **Gather Basic Company Information:**
->    * **Company Website:** Explore their "About Us", "Products/Services", "News", and "Investor Relations" sections.
->    * **Press Releases:** See recent announcements to understand their focus areas.
->    * **LinkedIn Company Page:** Get insights into their employee base, recent hires, and overall company culture.
->    * **Industry Reports:** Find relevant market research that covers their industry and competitors.
-> 2. **Identify Target Market and Customer Segmentation:**
->    * **Website and Marketing Materials:** Look for clues about who they are targeting (demographics, interests, pain points).
->    * **Social Media:** Analyze their followers and engagement to understand their audience.
->    * **Customer Reviews and Testimonials:** See what their current customers are saying about them.
-
-Gemini provides you with useful information to get started in your research. You continue your research by first focusing on news announcements. You gather a list of URLs, and you paste them into your conversation with Gemini Advanced. You type:
-
-> [URLs] Summarize these articles. Provide key insights and contextualize why these announcements are important. (Gemini Advanced) ✦
-
-Now you have a clear summary of what was announced, why the news is important, and additional insights. Next, you want to better understand the executive who will be your main point of contact. You find a recorded interview featuring the executive. You paste the YouTube URL into your conversation with Gemini Advanced and type:
-
-> [YouTube URL] Summarize this interview and tell me more about [executive name]. What does [executive] care about? (Gemini Advanced) ✦
-
-You continue the conversation with additional lines of questioning to build familiarity with your key contact and the account. You prompt:
-
-> Tell me how [company] can help [customer company] with achieving their goals. (Gemini Advanced) ✦
-
-Once you wrap up your conversation, you export your results into a Google Doc. You open the Google Doc and prompt Gemini in Docs. You type:
-
-> Create an email draft for [customer] explaining why [your company] is the perfect partner for them to achieve their market goals. (Gemini in Docs) [Docs icon]
-
-# Example use cases
-
-## Customer Success Manager
-### [NEW] Use case: Map customer journeys
-
-It’s your first time onboarding a new customer, and you realize you could benefit from creating custom-tailored assets. You open a new Doc and prompt Gemini in the Docs side panel and tag relevant files by typing @file name. You type:
-
-> Create personalized onboarding materials for [customer]. Use @[Standard Onboarding Documents] and @[New Customer Migration Notes] to personalize the assets. (Gemini in Docs) [Google Docs icon]
-
-## Sales Manager
-### [NEW] Use case: Manage the request for proposal (RFP) process
-
-You’ve just received an RFP, and you want to quickly ingest the request as part of your information gathering process. First, you want to do basic research on the company that issued the request. You visit Gemini Advanced and you type:
-
-> I just received an RFP from [company]. Before I dive into the RFP, I want your help in conducting research. Give me a business profile of the company including all of the basics (where they are located, what they provide for customers, who their target audience is, any recent news from the company). Be as detailed as possible as I want to see a full view of [the company]. (Gemini Advanced) [Gemini icon]
-
-Once you finish your research on the company, you want to summarize the RFP. You continue your conversation with Gemini. You type:
-
-> [URL or uploaded file] I am a sales manager at [company], and this is the RFP we’ve received from [company]. Summarize this content in a few paragraphs. What is the customer seeking, what is the budget, and when is a response due by? (Gemini Advanced) [Gemini icon]
-
-### [NEW] Use case: Access information and tools on your phone while on the go
-
-You are working remotely from your phone. From the mobile app, you open a thread in Gmail and select the Gemini chip to **Summarize this email**. Gemini quickly provides you with a summary of the back and forth so that you can focus on the most important points. (Gemini in Gmail) [Gmail icon]
-
-Now, you want to generate a response acknowledging the latest developments. You prompt Gemini in Gmail. You type:
-
-> Write a response to this email letting [them] know that I’ve received the message and will take [action] by [Friday]. (Gemini in Gmail) [Gmail icon]
-
-## Use case: Develop customer relationships
-
-Your annual conference is coming up, and your most important prospects will be there. You want to personally invite them to a happy hour. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Write an email inviting people interested in [focus area] to our happy hour taking place on [date, time] at [trade show event]. Include that we specialize in [focus area]. (Gemini in Gmail)
-
-Now that the event is over, you want to follow up with customers who came to the happy hour. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Draft an email thanking customers for their time at the happy hour on [date, time, location]. End with an invitation to continue the conversations in the next few weeks. Use a friendly tone. (Gemini in Gmail)
-
-You want to check in with the customers who attended workshops at the conference because their early feedback is important. You prompt Gemini in Docs. You type:
-
-> Draft 10 questions that I can use to survey customers about their recent experience with our [product/service]. Include questions to gauge how useful [the product] is, what they liked, and what they thought could use improvement. (Gemini in Docs)
-
-## Use case: Support the sales team
-
-You need to contact all of your team leads in the Southeast region to provide immediate guidance on how to proactively reach out to customers about an ongoing issue. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Draft an email to all Southeast region sales leads. Inform them of [issues]. Advise them to communicate with their teams to contact their customers and offer a 20% discount on a future order as an apology. (Gemini in Gmail)
-
-Now, you need to email all of the regional team members. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Draft an email to the regional sales representatives about an urgent meeting that needs to take place next week about the [issues]. Ask them to provide availability on Monday or Tuesday. (Gemini in Gmail)
-
-## Use case: Coach and train the sales team
-
-You’ve heard from many team members that they want more learning opportunities. You’re organizing a half-day learning program to support this request. You need to create a schedule, so you open a new Google Doc and
-
-prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Create a half-day agenda for an educational session on our latest technology [products] for sales teams. Include time for the product development team to present and include time for lunch. (Gemini in Docs)
-
-As a follow up to the team meeting, you want to highlight different learning opportunities available. You open Google Sheets and prompt Gemini in the Sheets side panel. You type:
-
-> Create a spreadsheet that tracks online courses for sellers. Include columns for the course’s main topic, price, duration, and priority level. (Gemini in Sheets)
-
-# Account Manager and Account Executive
-## **NEW** Use case: Improve collaboration and execution by customizing sales materials
-
-You are having an important meeting with a customer. From Google Meet, you turn on **Transcription** and activate Gemini in Meet by selecting **Take notes with Gemini**. The transcript provides an unedited Doc of what was said. The **Take notes with Gemini** file will generate notes recapping the meeting, important topics discussed, and action items. Now, you can fully engage with the customer conversation. (Gemini in Meet)
-
-After the call, you want to send a recap message to the customer. You open a new message and prompt Gemini in the Gmail side panel and tag relevant files by typing @file name. You type:
-
-> Write a message to [customer] thanking them for their time at our last [meeting]. Provide a quick summary of the meeting and acknowledge any pain points discussed. Ask for additional time to discuss our [solution] using @[Customer Meeting Gemini Notes]. (Gemini in Gmail)
-
-In preparation for your next meeting, you want to use the transcript and your existing sales materials to generate a customized asset that showcases how your company’s product solves the customer’s pain points mentioned during the call. To do this, you open a new Doc and prompt Gemini in the Docs side panel and tag relevant files by typing @file name. You type:
-
-> I am an [account manager] and I just finished a call with [customer]. I want to summarize the [pain points] mentioned by [customer] during our last meeting. Provide a list of direct quotes from @[Customer Call Transcript] where [customer] discusses what they are trying to solve. (Gemini in Docs)
-
-You read through the summary of pain points and see that they capture what was discussed. You click **Insert** from the side panel. Then, you want to use your existing files to generate custom responses to each of their pain points. You prompt Gemini in the Docs side panel again and tag relevant files. You type:
-
-> I need to create convincing reasons why [customer] should adopt [product] to solve for [their pain points]. Write specific reasons why [product] from [company] could help them achieve their [business goals] using @[Product Sales Kit Full Assets]. (Gemini in Docs)
-
-## Use case: Build customer relationships
-
-You just had a great call with a customer and now you want to use the notes you took from the meeting in Google Docs to draft an email to the customer. In the Google Doc with your notes, you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Compose a personalized follow-up email to [client] following an initial conversation. Summarize the key points we discussed and address any outstanding questions. (Gemini in Docs)
-
-The account has just adopted one of the company’s service offerings and you need to ensure that they feel supported during the onboarding process. You want to make sure you check in on how things are progressing once a week, but you want to explore what the emails could look like. You open a new Google Doc and prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Draft four email templates to check in on my customer weekly now that they have purchased our new [service]. Use one value proposition (cost, ease of use, security, availability, and customization) as the main topic for each email, and include [call to action] in each message. (Gemini in Docs)
-
-## Use case: Prepare for new customer calls
-
-You have an upcoming call with a prospect. This is a brand new use case for you, and you need help preparing for the call. You visit Gemini Advanced, and you type:
-
-> Draft a customized script for me to follow during my sales call with a prospect. The call will happen over a video call and is set to last 30 minutes. Make sure to add the following in the script: how [company products/solutions] can help address potential customer’s pain points, how [company]’s delivery system guarantees seamless and timely delivery, competitive pricing and volume-discount table, and space for a customer reference in the [customer’s industry] industry. (Gemini Advanced)
-
-Now that you’ve done initial research, you export your findings to a new Google Doc. You open the Google Doc and continue working. Now, you want to create a tailored pitch. Using the Google Doc with all of your research notes, you prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Generate an elevator pitch for [product name] and include key benefits, competitive points of differentiation, and the pain points that [product name] solves for. (Gemini in Docs)
-
-You have a great start to your elevator pitch and short talking points. You want to use this to further anticipate how the customer call might go. You resume your meeting preparation by returning to Gemini Advanced. You type:
-
-> I have an upcoming call with a prospect. [Use case] is a new use case for me, and I need help preparing for the call. List the most likely objections [customer] might have for me during a sales call, with suggestions on how to respond to them. I work in [industry], and I am trying to sell [product]. Also provide ideas on how to handle objections and suggest ways to respond. (Gemini Advanced)
-
-# Business Development Manager
-## Use case: Nurture relationships, personalized outreach, and thought leadership
-
-You’re hoping to build deeper relationships with prospective customers that you recently met. You want to draft a template that you can customize for multiple contacts. You open a new Google Doc, and you prompt Gemini in Docs. You type:
-
-> Draft an outreach email template to industry influencers. Express gratitude that we connected at [event], and propose collaboration opportunities such as [opportunities]. (Gemini in Docs)
-
-After having a successful call with prospective customers, you want to follow up with thought leadership content from your founder that they may find interesting. You open the Google Doc with the blog post, and prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Summarize this blog content in bullet points and generate three ideas for follow-up questions I can ask my customers about their thoughts. (Gemini in Docs)
-
-## Use case: Generate personalized customer appreciation materials
-
-You want to personally thank your customers and check in. You open Gmail and prompt Gemini in Gmail by selecting **Help me write**. You type:
-
-> Generate a personalized email for [customer] on their one-month anniversary working with [company]. Thank them for being a customer. Ask them if they have any questions. Include information about [other product]. (Gemini in Gmail)
-
-You also want to send these customers a gift to thank them. You open a Google Sheet and prompt Gemini in the Sheets side panel. You type:
-
-> Give me a list of gifts to send new clients that are under $200 and can be shipped to offices. (Gemini in Sheets)
-
-# Small business owners and entrepreneurs
-
-The image shows a woman with short curly hair wearing a striped shirt, sitting at a desk and working on a laptop. She is holding a credit card in her hand, appearing to manage business finances or make a purchase. In the background, there are several cardboard boxes on shelves, suggesting a small business, e-commerce, or shipping environment.
-
-As the owner of a business, getting the most out of your working hours is critical when you’re juggling multiple roles and responsibilities. Understanding your market, delivering for your customers, and staying on top of many competing priorities is critical.
-
-This section introduces you to AI prompts designed to simplify complex choices with AI data analysis, streamline your email inbox, and help you stand out with creative marketing tactics. Discover how Gemini for Google Workspace can help you unlock deep insights, foster collaboration, and help propel your company to new heights.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-### Prompt iteration example
-#### Use case: Create pricing comparison
-
-You are the owner of a local spa. You are evaluating offers you’ve received from two different cleaning companies. You want to find a company with the right price, flexibility, and level of service. You open a new Doc and prompt Gemini in the Docs side panel and tag relevant files by typing @file name in your prompt. You type:
-
-> I’m a business owner and I’m trying to determine the right cleaning vendor using @[Company A Proposal] and @[Company B Proposal]. I need someone to come twice a week, and I want them to vacuum, mop, dust, clean the windows, and wipe down all surfaces. If available, include information about the booking and cancellation policy. Create a comparison table between the two companies’ proposals. (Gemini in Docs)
-
-*   Persona
-*   Task
-*   Context
-*   Format
-
-### Gemini in Docs
-
-**Gemini Sidebar (Initial State):**
-Gemini
-Hello, Andrea
-How can I help you today?
-
-*   Brainstorm for a new product
-*   Create an outline for a pitch
-*   Write a blog post about an upcoming launch
-*   More suggestions >
-
-[Enter a prompt here]
-Gemini for Workspace may display inaccurate information, including about people, so double-check its responses. Learn more
-
-**Gemini Sidebar (Response State):**
-**User Prompt:**
-I'm a business owner and I'm trying to determine the right cleaning vendor using Company A Proposal and Company B Proposal. I need someone to come twice a week, and I want them to vacuum, mop, dust, clean the windows, and wipe down all surfaces. If available, include information about the booking and cancellation policy. Create a comparison table between the two company's proposals. ...
-
-**Gemini Response:**
 <table>
-  <thead>
-    <tr>
-        <th>Feature</th>
-        <th>Company A</th>
-        <th>Company B</th>
-    </tr>
-  </thead>
   <tbody>
     <tr>
-        <td>Services</td>
-        <td>Comprehensive cleaning, kitchen deep clean, bathroom sanitation, bedroom refresh, additional services (carpet cleaning, upholstery cleaning, post-construction cleaning)</td>
-        <td>General cleaning, kitchen cleaning, bathroom cleaning, bedroom cleaning, additional services (interior window cleaning, oven cleaning, fridge cleaning)</td>
+        <td>**Name**</td>
+        <td colspan="3">[name and version of your prompt]</td>
     </tr>
     <tr>
-        <td>Standard Cleaning Rate</td>
-        <td>$30 per hour per cleaner</td>
-        <td>$35 per hour per cleaner</td>
+        <td>**Goal**</td>
+        <td colspan="3">[One sentence explanation of the goal of this attempt]</td>
     </tr>
     <tr>
-        <td>Deep Cleaning Rate</td>
-        <td>$40 per hour per cleaner</td>
-        <td>$45 per hour per cleaner</td>
+        <td>**Model**</td>
+        <td colspan="3">[name and version of the used model]</td>
     </tr>
     <tr>
-        <td>Minimum Hours</td>
-        <td>2 hours per cleaning</td>
-        <td>2 hours per cleaning</td>
+        <td>**Temperature**</td>
+        <td>[value between 0 - 1]</td>
+        <td>**Token Limit**</td>
+        <td>[number]</td>
     </tr>
     <tr>
-        <td>Additional Fees</td>
-        <td>Travel fees may apply for locations outside of a 15-mile radius.</td>
-        <td>Travel fees may apply for locations outside of a 10-mile radius.</td>
+        <td>**Top-K**</td>
+        <td>[number]</td>
+        <td>**Top-P**</td>
+        <td>[number]</td>
     </tr>
     <tr>
-        <td>Cancellation Policy</td>
-        <td>48-hour notice</td>
-        <td>24-hour notice</td>
+        <td>**Prompt**</td>
+        <td colspan="3">[Write all the full prompt]</td>
     </tr>
     <tr>
-        <td>Products Used</td>
-        <td>Environmentally friendly and powerful cleaning products; can accommodate customer's preferred products</td>
-        <td>High-quality, eco-friendly cleaning products; can use customer's preferred products</td>
-    </tr>
-    <tr>
-        <td>Other Notes</td>
-        <td>Company A offers a wider range of services, including carpet and upholstery cleaning.</td>
-        <td>Company B offers interior window cleaning as part of their additional services.</td>
-    </tr>
-    <tr>
-        <td>Best For</td>
-        <td>Clients who prioritize a wide range of services and eco-friendly products.</td>
-        <td>Clients who need interior window cleaning and prefer a shorter cancellation notice period.</td>
+        <td>**Output**</td>
+        <td colspan="3">[Write out the output or multiple outputs]</td>
     </tr>
   </tbody>
 </table>
 
-Gemini returns a formatted table comparing the two proposals. After you make your decision, you go to your email and prompt Gemini in the Gmail side panel. You type:
-
-**Write an email to Company A thanking them for their time and their proposal. Ask for a few times to meet to schedule cleanings.** (Gemini in Gmail)
-
-### Gemini in Gmail
-
-**Gemini Sidebar (Initial State):**
-Gemini
-Hello, Andrea
-How can I help you today?
-
-*   Show unread emails from my inbox
-*   Get order details for recent purchases
-
-[Enter a prompt here]
-Gemini for Workspace may display inaccurate information, including about people, so double-check its responses. Learn more
-
-**Gemini Sidebar (Response State):**
-**User Prompt:**
-Write an email to Company A thanking them for their time and their proposal. Ask for a few times to meet to schedule cleanings.
-
-**Gemini Response:**
-Dear Company A,
-
-Thank you for taking the time to meet with me yesterday to discuss your cleaning services. I appreciate you providing a proposal for the work.
-
-I'm interested in moving forward and would like to discuss scheduling options. Would you have availability for a brief follow-up call to discuss dates and times for cleanings? I am generally available in the afternoons, Monday through Friday.
-
-Thank you again for your time and consideration. I look forward to hearing from you soon.
-
-Sincerely,
-
-Sources (4)
-[Enter a prompt here]
-
-# Example use cases
-
-## Owner
-### Use case: Enhance personal productivity
-
-You have many important email messages to catch up on. You open your email and select an important thread. You open Gemini in the Gmail side panel, and it automatically summarizes the content. (Gemini in Gmail)
-
-### Use case: Brainstorm and generate marketing content
-
-As the business owner, you are also responsible for marketing your services via your social channels, your email-based newsletter, and email marketing. You aren’t sure where to start, so you chat with Gemini Advanced. You type:
-
-> I own a [type of business] in [location]. I am working on marketing materials to advertise [event/sale] on [services]. I want to focus on using this sale to bring in repeat customers who haven’t purchased in a while and new customers alike. I want the social posts to feel [inspirational] and [fun]. Suggest some social copy I can use on [social platform] with relevant hashtags, suggested newsletter copy, and two email drafts (one for existing customers and one for new customers). (Gemini Advanced) ✦
-
-You like the suggestions Gemini provided, so you select **Share & export** and **Export to Docs**. You want to continue your brainstorm, so you ask Gemini:
-
-> What are some other effective [event/sale] tactics I can use to bring in new customers? I don’t always want to offer discounts. Are there other incentives I am overlooking? (Gemini Advanced) ✦
-
-You continue your conversation with Gemini and are able to create a solid list of marketing tactics to try.
-
-### Use case: Develop a competitive analysis
-
-You started a company, and your online business is gaining traction. You have always dreamed of opening a brick-and-mortar store, and now might be the perfect time. You want a thought partner to help you better understand the current landscape. You open Gemini Advanced, and you type:
-
-> I am an online business owner. I am considering opening a brick-and-mortar store. Conduct an analysis into the competitive landscape focusing on [focus area]. Provide the strengths and weaknesses of [key competitors] in this area, including their specific strategies, tactics, and results. Identify actionable insights and recommendations for how [my company] can improve its approach and gain a competitive advantage. (Gemini Advanced) ✦
-
-You gathered useful information from your discussion with Gemini Advanced. You want to go deeper in your brainstorming around two competitors in particular. You type:
-
-> Generate a competitive analysis of [company] versus [competitor] within the current market landscape. (Gemini Advanced) ✦
-
-You select **Share & export** and **Export to Docs**.
-
-## Use case: Conduct fundraising and investor relations
-
-You’re ready to reach out to potential investors to make your brick-and-mortar store a reality. You want help getting started on an email to investors, so in the same Google Doc with your competitive analysis research, you prompt Gemini in Docs. You type:
-
-> Draft a personalized email template to potential investors, highlighting [company’s] unique value proposition and recent progress on [initiatives]. Request a time to meet to discuss opportunities to collaborate in the next month. (Gemini in Docs) 📄
-
-The email template gives you a starting place. You tweak the draft and continue to add a few personal touches before sending the email to the potential investors. After a successful meeting with them a month later, you want to draft a thank you message. You open your Google Doc with the meeting transcript and notes. You prompt Gemini in Docs to help you write an email draft. You type:
-
-> Draft an email thanking a potential investor for the call and ask for time to schedule a follow-up meeting to address [questions and concerns]. (Gemini in Docs) 📄
-
-## Use case: Manage time off policies and tracking
-
-You have a lengthy handbook detailing all of your company’s policies and procedures. You want to make the time-off request policy easily digestible for new hires. You open the Google Doc with the handbook. You prompt Gemini in Docs by selecting **Help me write**. You type:
-
-> Generate a step-by-step checklist summarizing the company’s time-off request policy. Ensure it is written in plain language and easy for employees to understand. (Gemini in Docs) 📄
-
-You need a quick way to track staffing each week because many of your employees are shift-based. You open Gemini in the Sheets side panel. You type:
-
-> Create a table that tracks weekly staffing. Create columns for date, name, shift (AM or PM), and notes. (Gemini in Sheets) 📊
-
-# Startup leaders
-
-You thrive in fast-paced, dynamic environments where you can wear many hats and make a tangible impact. You’re driven by a passion for innovation, a desire to learn and grow, and a tolerance for risk. Your work is unique in its variety, its potential for high reward, and its direct connection to the company’s success. You’re not just executing tasks; you’re building something from the ground up, shaping the future of your company, and potentially disrupting entire industries.
-
-A woman is sitting at a desk with a laptop, smiling and gesturing with her hands. She is in a bright, modern office or home office setting.
-
-Gemini for Google Workspace can help you redefine productivity and foster meaningful connections with investors, customers, and coworkers. This section provides practical prompts and real-world use cases designed specifically for you and your team. Learning to write effective prompts with Gemini for Workspace will help improve your productivity and streamline your everyday tasks, giving you more time to focus on strategic work.
-
-## Getting started
-
-First, review the general prompt-writing tips on page 2 and the Prompting 101 section at the beginning of this guide.
-
-Each prompt below is presented with an accompanying scenario to serve as inspiration for how you can collaborate with Gemini for Workspace. The prompt iteration example shows how you could write follow-up prompts to build on the initial generated response.
-
-## Prompt iteration example
-### Use case: Brainstorm business and strategy
-
-You just had a productive planning and strategy brainstorming session with colleagues and you took many notes physically on a whiteboard. You snap a quick image with your phone and upload it directly to Gemini Advanced. You type:
-
-> I am a founder at a startup focused on [industry]. I was brainstorming with colleagues about [topic], and we took notes on this whiteboard. Turn these notes into text. (Gemini Advanced) ✦
-
-* Persona
-* Task
-* Context
-* Format
-
-> **User:** I am a founder at a startup focused on popular literature. I was brainstorming with colleagues about books people are currently reading, and we took notes on this whiteboard. Turn these notes into text.
->
-> Whiteboard with handwritten notes
->
-> Show drafts ∨ 🔊
->
-> **Gemini:** Certainly, here is the text from the whiteboard, capturing the list of books people are currently reading:
->
-> **What are you currently reading?**
->
-> *(Be specific!)*
-
-Now you want to proactively continue brainstorming before you recap all of the ideas and notes for the group in a follow-up email. You continue the conversation and type:
-
-Suggest follow-up items we could discuss for our [topic of brainstorm session]. What was not covered that could have been, and what are we potentially missing? (Gemini Advanced) ✦
-
-Gemini Advanced
-
-> **User:** Suggest follow-up items we could discuss for our brainstorm session on current popular literature. What was not covered that could have been, and what are we potentially missing?
->
-> Show drafts ∨ 🔊
->
-> **Gemini:** Here are some follow-up items we could discuss in our brainstorm session on current popular literature, considering what wasn't covered and what we might be missing:
->
-> **Potential Gaps and Follow-up Questions**
->
-> * **Genre & Theme Deep Dive**
->     * Beyond the listed titles, what broader genres or themes are currently resonating with readers? (e.g., dystopian fiction, climate fiction, social justice narratives)
->     * Are there any emerging trends or subgenres gaining popularity?
->     * What are the underlying cultural or societal factors driving interest in these genres/themes?
-> * **Author & Publisher Landscape:**
->     * Who are the influential authors and publishers shaping the current literary scene?
-
-You save all of your notes by clicking **Share & export** and **Export to Docs**. You are ready to send the recap message to the team, so you open your email and prompt Gemini in the Gmail side panel and tag the relevant file of notes by typing @file name. You type:
-
-> Use @[Brainstorm Notes and Ideas 9/1/24] to write a meeting recap to the team using an upbeat and friendly tone. Share some of the ideas I have for our next meeting to discuss [topic]. (Gemini in Gmail)
-
-The following images illustrate the interface and workflow for Gemini in Gmail:
-
-*   An icon for **Gemini in Gmail**.
-*   A menu showing options to **Export to Docs** and **Draft in Gmail**.
-*   A notification bar: "New document created. **Open Docs** [X]".
-*   A screenshot of the Gemini side panel in Gmail showing a greeting: "Hello, Andrea. How can I help you today?" with quick action buttons for "Show unread emails from my inbox" and "Get order details for recent purchases". At the bottom, it states: "Gemini for Workspace may display inaccurate information, including about people, so double-check its responses. Learn more".
-*   A screenshot of the Gemini side panel showing a completed prompt and its response:
-    *   **Prompt:** Use [Google Docs icon] Brainstorm Notes and Ideas 9/1/24 to write a meeting recap to the team using an upbeat and friendly tone. Share some of the ideas I have for our next meeting to discuss current popular literature.
-    *   **Response:**
-        Hi team,
-        
-        I wanted to share a quick recap of our recent brainstorm on current popular literature and some ideas for our next discussion.
-        
-        We had a great conversation about the books that are currently resonating with readers, and I was particularly interested in our discussion of emerging trends and subgenres. I'd love to delve deeper into this topic in our next meeting.
-        
-        Here are some additional areas I think would be valuable to explore:
-        *   **Genre & Theme Deep Dive:** Beyond specific titles, what broader genres and themes are capturing readers' attention? Are there any underlying cultural or societal factors influencing these trends?
-        *   **Author & Publisher Landscape:** Who are the key players shaping the current literary scene? Are there any new voices or independent publishers we should be aware of? How are traditional publishing models adapting to the digital age?
-        *   **Reader Engagement & Community:** How are readers interacting with and discussing popular literature? What role do online
-
-# Example use cases
-
-## Founder
-### Use case: Create an elevator pitch (speech to text)
-
-You’re scheduled to present to a group of prospective investors. This will be your first time discussing your business with this audience. You need to work on your elevator pitch, so you chat with Gemini Advanced using your voice to prompt. You select the microphone icon and say:
-
-> I’m the founder of [startup] in [industry], and I need help creating a short elevator pitch for [company and product description]. I need to make the pitch relevant to [audience] and I want to especially highlight [key features of product] because I want them to [take this action]. Include a compelling hook and anticipate questions an investor might have. Make the tone professional but relaxed and confident. (Gemini Advanced) ✦
-
-## Use case: Develop your personal brand
-
-As your company grows, you’re working on increasing your social media presence, so you want to define and hone your personal brand. To brainstorm, you turn to Gemini Advanced. You type:
-
-> Help me grow my personal brand. I am the founder of [a startup] in [industry]. I am passionate about [topics]. I want to inspire [audience] with business tips and lessons I’ve learned from starting my own company. My goals are to build a following so that I can [generate more media] for the business. What are some ideas you have for how to accomplish this? (Gemini Advanced) ✦
-
-Gemini returns insights into how you can begin to build messaging and content that aligns to your personal brand and that can help you achieve your goals.
-
-# Head of Operations
-## Use case: Communicate and negotiate with vendors
-
-You’ve received a quote from two different manufacturers to create packaging for the company’s new product. You want to compare and contrast the offers before you negotiate. You open a new Doc and prompt Gemini in the Docs side panel and reference relevant files by typing @file name. You type:
-
-> I need to make a vendor decision for packaging manufacturing. Create a table that compares the two proposals I’ve received @[Company A’s Proposal] and @[Company B’s Proposal]. (Gemini in Docs) 📄
-
-Gemini creates a table comparing the two different proposals. You make a decision, but now you want to see if you can negotiate with your preferred vendor. You go to your inbox and start a new email draft. You prompt Gemini in the Gmail side panel. You type:
-
-> Create an email draft to [selected vendor] telling them that I’ve decided to move forward with them as the [packaging] vendor, but I would like to negotiate [a bulk pricing discount]. Use a collaborative tone. (Gemini in Gmail) ✉️
-
-Gemini in Gmail returns a drafted message that is ready to send. You select **Insert** and send the email.
-
-## Use case: Plan and track budgets
-
-You’re in planning mode and you first want to understand where previous years’ budgets were spent. You have all of this data in a Sheet. You decide to chat with Gemini Advanced. You upload the Sheet and prompt Gemini by typing:
-
-> Using the attached spreadsheet, identify trends and patterns in our expenses by category over the last three years. Identify areas where costs have increased significantly and investigate potential reasons. (Gemini Advanced) ✦
-
-Gemini returns a response that helps inform your budget proposal for next year.
-
-# Head of Product
-## Use case: Develop a product launch plan
-
-Your team is creating a new product, and you want to conduct research to inform your launch plan in collaboration with the marketing team. Using Gemini, you want to simulate different launch scenarios based on factors like pricing, marketing strategies, and target audience. You go to Gemini Advanced to conduct research and type:
-
-> I am head of product at [startup] in [industry] industry. We are building a product launch plan for [product]. I want to brainstorm a few different scenarios. We are considering offering the [product] at two different price points [A and B] and we are considering launching in [December or January]. Provide pros and cons of each scenario and suggest different ideas we may not have considered. (Gemini Advanced) ✦
-
-You want to continue market research brainstorming. You type:
-
-> How do these prices compare to [competitor products’] prices? Detail what pricing strategies [competitors] use for [products], and list any common tactics they use (such as free trials, discounts, etc.). Summarize how they position the product to [audience]. Cite your sources. (Gemini Advanced) ✦
-
-Your research helps you refine your pricing structure and go-to-market strategy for your most important target audience.
-
-## Use case: Develop product strategy and roadmap
-
-You want to refine your product strategy and roadmap. You’ve collected user feedback in a spreadsheet, and you want to clean it up so that it is ready for deeper analysis. You chat with Gemini Advanced and upload a file. You type:
-
-> Help me clean my [user feedback] survey spreadsheet. Specifically, fill any blank values in the name column with “Anonymous,” then if the [recommend] column shows [Yes], replace that with [Y]. Finally, remove any rows where the satisfaction column is blank. Please generate a new file for me with my cleaned data. (Gemini Advanced) ✦
-
-Gemini returns a clean file for you to conduct deeper analysis on, and from this file, you notice a few trends. You have alignment from the team on features to address recurring user feedback, and now you want to build a high-level roadmap that you can use as a starting point. You continue your conversation with Gemini Advanced. You type:
-
-> I am head of product at [startup] in the [industry] industry. We are adding [features] to our [product] to address recurring user feedback, including [feedback trends]. Build a high-level roadmap that will keep us on track for a Q4 delivery. Put it in a table format. (Gemini Advanced) ✦
-
-Gemini returns a helpful starting point. You want to save the work so you click **Export to Docs.**
-
-# Leveling up your prompt writing
-
-This guide is meant to serve as inspiration, and the possibilities are nearly endless with Gemini for Google Workspace. Build on your prompt-writing skills using these tips.
-
-* **Break it up.** If you want Gemini for Workspace to perform several related tasks, break them into separate prompts.
-* **Give constraints.** To generate specific results, include details in your prompt such as character count limits or the number of options you’d like to generate.
-* **Assign a role.** To encourage creativity, assign a role. You can do this by starting your prompt with language like: “You are the head of a creative department for a leading advertising agency …”
-* **Ask for feedback.** In your conversation with Gemini Advanced, tell it that you’re giving it a project, include all the relevant details, and then describe the output you want. Continue the conversation by asking questions like, “What questions do you have for me that would help you provide the best output?”
-* **Consider tone.** Tailor your prompts to suit your intended audience. Ask for outputs to have a specific tone, such as formal, informal, technical, creative, or casual.
-* **Say it another way.** Fine-tune your prompts if the results don’t meet your expectations or if you believe there’s room for improvement. An iterative process of review and refinement often yields better results.
-
-> Generative AI and all of its possibilities are exciting, but it’s still new. Even though our models are getting better every day, prompts can sometimes have unpredictable responses.
->
-> Before putting an output from Gemini for Workspace into action, review it to ensure clarity, relevance, and accuracy. And of course, keep the most important thing in mind: Generative AI is meant to help humans, but the final output is yours.
->
-> The example prompts in this guide are meant for illustrative purposes.
-
-# Stay up to date
-
-**workspace.google.com**
-**workspace.google.com/blog**
-
-Happy prompting!
+Table 21. A template for documenting prompts
+
+# Summary
+
+This whitepaper discusses prompt engineering. We learned various prompting techniques, such as:
+
+* Zero prompting
+* Few shot prompting
+* System prompting
+* Role prompting
+* Contextual prompting
+* Step-back prompting
+* Chain of thought
+* Self consistency
+* Tree of thoughts
+
+* ReAct
+
+We even looked into ways how you can automate your prompts.
+
+The whitepaper then discusses the challenges of gen AI like the problems that can happen when your prompts are insufficient. We closed with best practices on how to become a better prompt engineer.
+
+# Endnotes
+
+1. Google, 2023, Gemini by Google. Available at: https://gemini.google.com.
+2. Google, 2024, Gemini for Google Workspace Prompt Guide. Available at: https://inthecloud.withgoogle.com/gemini-for-google-workspace-prompt-guide/dl-cd.html.
+3. Google Cloud, 2023, Introduction to Prompting. Available at: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/introduction-prompt-design.
+4. Google Cloud, 2023, Text Model Request Body: Top-P & top-K sampling methods. Available at: https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text#request_body.
+5. Wei, J., et al., 2023, Zero Shot - Fine Tuned language models are zero shot learners. Available at: https://arxiv.org/pdf/2109.01652.pdf.
+6. Google Cloud, 2023, Google Cloud Model Garden. Available at: https://cloud.google.com/model-garden.
+7. Brown, T., et al., 2023, Few Shot - Language Models are Few Shot learners. Available at: https://arxiv.org/pdf/2005.14165.pdf.
+8. Zheng, L., et al., 2023, Take a Step Back: Evoking Reasoning via Abstraction in Large Language Models. Available at: https://openreview.net/pdf?id=3bq3jsvcQ1
+9. Wei, J., et al., 2023, Chain of Thought Prompting. Available at: https://arxiv.org/pdf/2201.11903.pdf.
+10. Google Cloud Platform, 2023, Chain of Thought and React. Available at: https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/prompts/examples/chain_of_thought_react.ipynb.
+11. Wang, X., et al., 2023, Self Consistency Improves Chain of Thought reasoning in language models. Available at: https://arxiv.org/pdf/2203.11171.pdf.
+12. Yao, S., et al., 2023, Tree of Thoughts: Deliberate Problem Solving with Large Language Models. Available at: https://arxiv.org/pdf/2305.10601.pdf.
+13. Yao, S., et al., 2023, ReAct: Synergizing Reasoning and Acting in Language Models. Available at: https://arxiv.org/pdf/2210.03629.pdf.
+14. Google Cloud Platform, 2023, Advance Prompting: Chain of Thought and React. Available at: https://github.com/GoogleCloudPlatform/applied-ai-engineering-samples/blob/main/genai-on-vertex-ai/advanced_prompting_training/cot_react.ipynb.
+15. Zhou, C., et al., 2023, Automatic Prompt Engineering - Large Language Models are Human-Level Prompt Engineers. Available at: https://arxiv.org/pdf/2211.01910.pdf.

@@ -11,10 +11,9 @@ Or via the installed entry point:
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
-
-from meta_prompt_mcp.index_manager import IndexManager
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -26,97 +25,60 @@ logging.basicConfig(
 logger = logging.getLogger("meta-prompt-mcp")
 
 # ---------------------------------------------------------------------------
-# Server + Index
+# Server
 # ---------------------------------------------------------------------------
 mcp = FastMCP(
     "meta-prompt-mcp",
     instructions=(
         "You are connected to the Meta-Prompt MCP server — a Prompting Oracle "
         "backed by official prompting guides. "
-        "Use the `get_prompting_strategy` tool to look up specific prompting techniques, "
-        "patterns, and best practices."
+        "Use the `get_google_guide` and `get_anthropic_guide` tools to look up "
+        "comprehensive prompting techniques, patterns, and best practices."
     ),
 )
 
-_index_manager = IndexManager()
+
+def _read_guide(filename: str) -> str:
+    """Read a guide from the data directory."""
+    data_dir = Path(__file__).parent / "data"
+    filepath = data_dir / filename
+    try:
+        return filepath.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return f"⚠️  Guide not found: {filename}. Please ensure it exists in the data directory."
+    except Exception as exc:
+        return f"⚠️  Error reading guide: {exc}"
+
 
 # ---------------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------------
 
+@mcp.tool()
+def get_google_guide() -> str:
+    """Get the full Google Prompting Guide markdown content.
+    
+    Returns:
+        The complete markdown text of the Google Prompting Guide.
+    """
+    logger.info("Tool call: get_google_guide()")
+    return _read_guide("google_prompting_guide.md")
+
 
 @mcp.tool()
-def get_prompting_strategy(query: str) -> str:
-    """Look up a prompting technique or best practice from official prompting guides.
-
-    Args:
-        query: Natural-language question about a prompting strategy or technique.
-
+def get_anthropic_guide() -> str:
+    """Get the full Anthropic Prompting Guide markdown content.
+    
     Returns:
-        Synthesized answer grounded in the guides.
+        The complete markdown text of the Anthropic Prompting Guide.
     """
-    logger.info("Tool call: get_prompting_strategy(%r)", query)
-    try:
-        result = _index_manager.query(query)
-        return result
-    except FileNotFoundError as exc:
-        return (
-            f"⚠️  Setup required: {exc}\n\n"
-            "Please place prompting guide documents (PDFs or Markdown) in the data/ directory "
-            "and restart the server."
-        )
-    except RuntimeError as exc:
-        return f"⚠️  Configuration error: {exc}"
-
-
-# ---------------------------------------------------------------------------
-# Prompts
-# ---------------------------------------------------------------------------
-
-
-@mcp.prompt()
-def improve_my_prompt(draft_prompt: str) -> str:
-    """Analyze a draft prompt and return an improved version using prompting best practices.
-
-    This prompt template instructs the host LLM to:
-    1. Look up relevant techniques from the accessible Prompting Guides
-    2. Identify weaknesses in the draft
-    3. Apply specific improvements with explanations
-
-    Args:
-        draft_prompt: The user's draft prompt that needs improvement.
-    """
-    return f"""You are a Prompt Engineering Expert with access to official Prompting Guides.
-
-Your task is to analyze and improve the following draft prompt.
-
-## Draft Prompt
-{draft_prompt}
-
-## Instructions
-1. First, use the `get_prompting_strategy` tool to look up relevant prompting techniques
-   (e.g., few-shot patterns, chain-of-thought, delimiters, role assignment).
-2. Identify specific weaknesses in the draft prompt.
-3. Rewrite the prompt applying the techniques you found.
-4. Explain what you changed and why, citing the specific technique from the guides that motivated each.
-
-Return your response in this format:
-
-### Analysis
-[What's weak about the current prompt]
-
-### Improved Prompt
-[The rewritten prompt]
-
-### Changes Applied
-[Bullet list of changes with the technique that motivated each]
-"""
+    logger.info("Tool call: get_anthropic_guide()")
+    return _read_guide("anthropic_prompting_guide.md")
 
 
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
-
 
 def main() -> None:
     """Run the MCP server using stdio transport."""
