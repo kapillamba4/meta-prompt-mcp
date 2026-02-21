@@ -1,4 +1,4 @@
-.PHONY: install dev lint format test build publish clean run build-index
+.PHONY: install dev lint format test build publish clean run benchmark
 
 # --------------------------------------------------------------------------
 # Development
@@ -27,8 +27,8 @@ test:  ## Run tests
 run:  ## Start the MCP server
 	meta-prompt-mcp
 
-build-index:  ## Pre-build the vector index from PDFs in data/
-	meta-prompt-mcp-build-index
+benchmark:  ## Run prompt quality benchmark (requires OPENROUTER_API_KEY)
+	python benchmarks/benchmark.py
 
 # --------------------------------------------------------------------------
 # Build & Publish
@@ -54,9 +54,6 @@ clean:  ## Remove build artifacts
 	rm -rf dist/ build/ *.egg-info src/*.egg-info
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name '*.pyc' -delete 2>/dev/null || true
-
-clean-index:  ## Remove the cached vector index (forces rebuild on next run)
-	rm -rf src/meta_prompt_mcp/storage/
 
 # --------------------------------------------------------------------------
 # Help

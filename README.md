@@ -44,6 +44,21 @@ When building AI workflows, creating robust "meta-prompts" (system prompts for a
 
 ---
 
+## Benchmark Results
+
+To validate the tool's impact, we ran a benchmark comparing prompts generated **with** and **without** the prompting guides across 5 diverse tasks. An independent judge LLM scored each prompt on Clarity, Specificity, Structure, Effectiveness, and Overall quality (1–10 scale).
+
+> **[View Full Benchmark Results →](benchmarks/results.md)**
+
+Run the benchmark yourself:
+
+```bash
+export OPENROUTER_API_KEY=sk-or-...
+make benchmark
+```
+
+---
+
 ## Quick Start
 
 ### 1. Install
@@ -120,6 +135,7 @@ make run
 |---------|-------------|
 | `make dev` | Install in editable mode with dev dependencies |
 | `make run` | Start the MCP server |
+| `make benchmark` | Run prompt quality benchmark (requires `OPENROUTER_API_KEY`) |
 | `make lint` | Run linter |
 | `make format` | Auto-format code |
 | `make test` | Run tests |
@@ -135,7 +151,10 @@ meta-prompt-mcp/
 ├── pyproject.toml              # Package config & dependencies
 ├── Makefile                    # Dev commands (make help)
 ├── README.md
-├── .env.example                # Env template
+├── .env.example                # Env template (OPENROUTER_API_KEY)
+├── benchmarks/
+│   ├── benchmark.py            # Prompt quality benchmark
+│   └── results.md              # Generated benchmark results
 └── src/
     └── meta_prompt_mcp/
         ├── __init__.py
