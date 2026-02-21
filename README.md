@@ -1,4 +1,4 @@
-# 🔮 Meta-Prompt MCP
+# Meta-Prompt MCP
 
 > **A Prompting Oracle** — An MCP server that bridges Google's official 68-page Prompting Guide 101 with your LLM workflow using RAG.
 
@@ -138,7 +138,7 @@ python -m meta_prompt_mcp
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `LLAMA_CLOUD_API_KEY` | First run only | LlamaParse API key for PDF parsing |
+| `LLAMA_CLOUD_API_KEY` | Only for rebuilding index | LlamaParse API key for PDF parsing |
 
 ---
 

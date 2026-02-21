@@ -22,7 +22,6 @@ env/
 .env
 
 # Project-specific
-data/*.pdf
 
 # OS
 .DS_Store
