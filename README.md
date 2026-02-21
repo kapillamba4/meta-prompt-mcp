@@ -1,6 +1,6 @@
 # Meta-Prompt MCP
 
-> **A Prompting Oracle** — An MCP server that bridges official Prompting Guides with your LLM workflow.
+> **A Prompting Oracle** — An MCP server that bridges official Prompting Guides with your LLM workflow to help you generate highly accurate, effective, and structured meta-prompts.
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -8,7 +8,9 @@
 
 ## What It Does
 
-Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that acts as an automated "Prompting Oracle." It lets any MCP-compatible host (Claude Desktop, Cursor, etc.) **query your prompting Guides** mid-conversation for specific techniques and best practices.
+Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that acts as an automated "Prompting Oracle." It empowers any MCP-compatible host (Claude Desktop, Cursor, etc.) to **query expert Prompting Guides** mid-conversation. 
+
+When building AI workflows, creating robust "meta-prompts" (system prompts for agents) is critical. Instead of guessing how to instruct an LLM, this server provides immediate access to authoritative guidelines. By surfacing these best practices on-demand, it ensures the meta-prompts you generate are exceptionally accurate, helpful, and grounded in proven methodology.
 
 ### Architecture
 
@@ -35,9 +37,9 @@ Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that ac
 
 | Feature | Details |
 |---------|---------|
-| **`get_google_guide` tool** | Dumps the full Google Prompting Guide 101 markdown |
-| **`get_anthropic_guide` tool** | Dumps the full Anthropic Prompting Guide markdown |
-| **Offline capable** | Runs entirely locally, reading from bundled markdown files |
+| **`get_google_guide` tool** | Retrieves the comprehensive Google Prompting Guide to inform clear, context-rich prompting strategies |
+| **`get_anthropic_guide` tool** | Retrieves the full Anthropic Prompting Guide for mastering capabilities and system prompts |
+| **Offline capable** | Runs entirely locally, reading from bundled markdown files with zero API dependencies |
 
 ---
 
