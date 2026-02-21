@@ -58,12 +58,17 @@ class IndexManager:
             self._build_index()
 
     def query(self, question: str, similarity_top_k: int = 5) -> str:
-        """Query the index and return a synthesized answer string."""
+        """Query the index and return retrieved context without LLM synthesis."""
         self.ensure_index()
 
-        query_engine = self._index.as_query_engine(similarity_top_k=similarity_top_k)
-        response = query_engine.query(question)
-        return str(response)
+        retriever = self._index.as_retriever(similarity_top_k=similarity_top_k)
+        nodes = retriever.retrieve(question)
+        
+        if not nodes:
+            return "No relevant strategies found."
+            
+        result_text = "\n\n---\n\n".join(f"**Excerpt (Score: {node.score:.2f}):**\n\n{node.node.get_content()}" for node in nodes)
+        return f"Found the following relevant strategies from Google's Prompting Guide 101:\n\n{result_text}"
 
     # ------------------------------------------------------------------
     # Internal helpers
