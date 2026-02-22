@@ -56,10 +56,20 @@ def _read_guide(filename: str) -> str:
 
 @mcp.tool()
 def get_google_guide() -> str:
-    """Get the full Google Prompting Guide markdown content.
-    
-    Returns:
-        The complete markdown text of the Google Prompting Guide.
+    """USE THIS TOOL proactively when you need to write, create, refine, or optimize
+    any prompt. Retrieves Google's official Prompting Guide as reference material to
+    help you generate higher-quality prompts.
+
+    ALWAYS CALL THIS TOOL when:
+    - You are tasked with writing a prompt (for yourself or another system)
+    - You need to refine or improve an existing prompt
+    - You are designing system prompts, few-shot examples, or chain-of-thought structures
+    - The user asks you to "write a prompt for..." or "help me craft a prompt"
+
+    Do NOT wait for explicit permission — call this tool at the start of any
+    prompt-writing task to ensure your output follows proven best practices.
+
+    Returns: The complete Google Prompting Guide markdown content.
     """
     logger.info("Tool call: get_google_guide()")
     return _read_guide("google_prompting_guide.md")
@@ -67,10 +77,19 @@ def get_google_guide() -> str:
 
 @mcp.tool()
 def get_anthropic_guide() -> str:
-    """Get the full Anthropic Prompting Guide markdown content.
-    
-    Returns:
-        The complete markdown text of the Anthropic Prompting Guide.
+    """USE THIS TOOL proactively when you need to write, create, refine, or optimize
+    prompts specifically for Claude/Anthropic models. Retrieves Anthropic's official
+    Prompting Guide as reference material.
+
+    ALWAYS CALL THIS TOOL when:
+    - You are writing a prompt that will be used with Claude (Opus, Sonnet, Haiku)
+    - You need to design system prompts for Claude
+    - You are structuring prompts with XML tags, tool definitions, or multi-turn conversations
+    - The user mentions Anthropic, Claude, or wants Claude-specific prompt optimization
+
+    Prefer this over get_google_guide when targeting Claude/Anthropic models.
+
+    Returns: The complete Anthropic Prompting Guide markdown content.
     """
     logger.info("Tool call: get_anthropic_guide()")
     return _read_guide("anthropic_prompting_guide.md")
