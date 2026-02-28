@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.kapillamba4/meta-prompt-mcp",
+  "description": "MCP server providing official Google and Anthropic prompting guides for meta-prompt generation.",
+  "repository": {
+    "url": "https://github.com/kapillamba4/meta-prompt-mcp",
+    "source": "github"
+  },
+  "version": "1.0.11",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "meta-prompt-mcp",
+      "version": "1.0.11",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": []
+    }
+  ]
+}

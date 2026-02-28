@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.kapillamba4/meta-prompt-mcp -->
+
 # Meta-Prompt MCP
 
 > **A Prompting Oracle** — An MCP server that bridges official Prompting Guides with your LLM workflow to help you generate highly accurate, effective, and structured meta-prompts.
