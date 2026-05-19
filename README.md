@@ -1,8 +1,6 @@
-<!-- mcp-name: io.github.kapillamba4/meta-prompt-mcp -->
-
 # Meta-Prompt MCP
 
-> **A Prompting Oracle** — An MCP server that bridges official Prompting Guides with your LLM workflow to help you generate highly accurate, effective, and structured meta-prompts.
+> Instant access to Google and Anthropic's official prompting guides within your LLM workflow—optimized for crafting high-quality meta-prompts and system prompts.
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -11,48 +9,43 @@
 
 ## What It Does
 
-Meta-Prompt MCP is a specialized **Model Context Protocol (MCP)** server that acts as an automated "Prompting Oracle." It empowers any MCP-compatible host (Claude Desktop, Cursor, etc.) to **query expert Prompting Guides** mid-conversation. 
+Meta-Prompt MCP is an MCP server that surfaces official prompting best practices from Google and Anthropic directly within your LLM workflow. Instead of searching documentation or guessing how to instruct an LLM, you can query expert guides on-demand.
 
-When building AI workflows, creating robust "meta-prompts" (system prompts for agents) is critical. Instead of guessing how to instruct an LLM, this server provides immediate access to authoritative guidelines. By surfacing these best practices on-demand, it ensures the meta-prompts you generate are exceptionally accurate, helpful, and grounded in proven methodology.
+This is especially valuable when crafting meta-prompts (system prompts for agents) or optimizing your own prompting strategies. By grounding your prompts in proven methodology, you'll generate more effective, well-structured outputs.
 
-### Architecture
+### How It Works
+
+Your MCP host (Claude Desktop, Cursor, etc.) communicates with the server via stdio. When you ask for a guide, the server retrieves it from bundled markdown files—no API calls, no latency.
 
 ```
-┌─────────────────────┐     stdio      ┌──────────────────────────┐
-│   MCP Host          │◄──────────────►│   Meta-Prompt MCP        │
-│   (Claude Desktop,  │                │                          │
-│    Cursor, IDEs)    │                │   ┌──────────────────┐   │
-│                     │                │   │  FastMCP Server   │   │
-│                     │                │   │  • get_google_    │   │
-│                     │                │   │    guide          │   │
-│                     │                │   │  • get_anthropic_ │   │
-│                     │                │   │    guide          │   │
-│                     │                │   └────────┬─────────┘   │
-│                     │                │            │              │
-│                     │                │   ┌────────▼─────────┐   │
-│                     │                │   │  ./data/         │   │
-│                     │                │   │  (markdown files) │   │
-│                     │                │   └──────────────────┘   │
-└─────────────────────┘                └──────────────────────────┘
+┌────────────────────────┐          ┌──────────────────────────┐
+│   Your LLM Host        │◄─stdio──►│  Meta-Prompt MCP Server  │
+│  (Claude Desktop, etc) │          │                          │
+└────────────────────────┘          │  • get_google_guide      │
+                                    │  • get_anthropic_guide   │
+                                    │                          │
+                                    │  Data layer:             │
+                                    │  ./data/                 │
+                                    │  ├── google_*.md         │
+                                    │  └── anthropic_*.md      │
+                                    └──────────────────────────┘
 ```
 
 ### Key Features
 
-| Feature | Details |
-|---------|---------|
-| **`get_google_guide` tool** | Retrieves the comprehensive Google Prompting Guide to inform clear, context-rich prompting strategies |
-| **`get_anthropic_guide` tool** | Retrieves the full Anthropic Prompting Guide for mastering capabilities and system prompts |
-| **Offline capable** | Runs entirely locally, reading from bundled markdown files with zero API dependencies |
+- **`get_google_guide`** — Retrieves Google's comprehensive prompting guide covering techniques, best practices, and LLM configuration
+- **`get_anthropic_guide`** — Retrieves Anthropic's guide on chain-of-thought, multishot prompting, and extended thinking
+- **Zero dependencies** — Runs entirely offline with bundled guides; no API keys or network calls required
 
 ---
 
-## Benchmark Results
+## Validation
 
-To validate the tool's impact, we ran a benchmark comparing prompts generated **with** and **without** the prompting guides across 5 diverse tasks. An independent judge LLM scored each prompt on Clarity, Specificity, Structure, Effectiveness, and Overall quality (1–10 scale).
+We ran a benchmark comparing prompts generated with and without guide access across 5 diverse tasks. An independent judge LLM scored each on Clarity, Specificity, Structure, Effectiveness, and Overall quality (1–10 scale).
 
-> **[View Full Benchmark Results →](benchmarks/results.md)**
+**[See full results →](benchmarks/results.md)**
 
-Run the benchmark yourself:
+To reproduce the benchmark:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-...
@@ -117,11 +110,23 @@ claude mcp add meta-prompt-mcp -- uvx meta-prompt-mcp
 
 ---
 
+## Usage
+
+Query the guides while crafting your prompts. Examples:
+
+- *"I'm building a code reviewer agent. Reference the Google guide to help me write a better system prompt."*
+- *"Based on the Anthropic guide, suggest improvements to this prompt for better reasoning."*
+- *"What technique from the guides would work best for this task?"*
+
+The LLM reads the guides and uses that knowledge to give you more informed suggestions and feedback on your prompts.
+
+---
+
 ## Development
 
 ```bash
 # Clone the repo
-git clone <your-repo-url>
+git clone https://github.com/kapillamba4/meta-prompt-mcp.git
 cd meta-prompt-mcp
 
 # Install in dev mode
@@ -131,18 +136,18 @@ make dev
 make run
 ```
 
-### Make Targets
+### Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `make dev` | Install in editable mode with dev dependencies |
-| `make run` | Start the MCP server |
-| `make benchmark` | Run prompt quality benchmark (requires `OPENROUTER_API_KEY`) |
-| `make lint` | Run linter |
-| `make format` | Auto-format code |
-| `make test` | Run tests |
-| `make build` | Build distribution packages |
-| `make publish` | Publish to PyPI |
+```bash
+make dev        # Install in editable mode with dev dependencies
+make run        # Start the MCP server locally
+make lint       # Check code quality
+make format     # Auto-format code with Black & isort
+make test       # Run test suite
+make benchmark  # Run prompt quality benchmark (requires OPENROUTER_API_KEY)
+make build      # Build distribution packages
+make publish    # Publish to PyPI
+```
 
 ---
 
@@ -150,22 +155,28 @@ make run
 
 ```
 meta-prompt-mcp/
-├── pyproject.toml              # Package config & dependencies
-├── Makefile                    # Dev commands (make help)
-├── README.md
-├── .env.example                # Env template (OPENROUTER_API_KEY)
+├── pyproject.toml                 # Dependencies and package config
+├── Makefile                       # Development commands
+├── .env.example                   # Template for OPENROUTER_API_KEY
+│
 ├── benchmarks/
-│   ├── benchmark.py            # Prompt quality benchmark
-│   └── results.md              # Generated benchmark results
-└── src/
-    └── meta_prompt_mcp/
-        ├── __init__.py
-        ├── __main__.py         # python -m support
-        ├── server.py           # FastMCP server with tools
-        └── data/               # Bundled markdown guides
+│   ├── benchmark.py               # Prompt quality evaluation script
+│   └── results.md                 # Benchmark results
+│
+└── src/meta_prompt_mcp/
+    ├── __init__.py
+    ├── __main__.py                # Entry point (python -m)
+    ├── server.py                  # FastMCP server & tool definitions
+    └── data/
+        ├── google_prompting_guide.md
+        └── anthropic_prompting_guide.md
 ```
 
 ---
+
+## Contributing
+
+Issues, feature requests, and contributions welcome. Please open an issue on [GitHub](https://github.com/kapillamba4/meta-prompt-mcp/issues).
 
 ## License
 
